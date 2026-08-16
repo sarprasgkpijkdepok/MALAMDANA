@@ -227,7 +227,7 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
     </div>
   </div>
   <div class="card cTren">
-    <h2>Perkembangan Dana Terkumpul</h2>
+    <h2>Perkembangan Dana Diterima</h2>
     <svg id="trSvg" class="tr" viewBox="0 0 1200 210">
       <defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#fbbf24" stop-opacity=".5"></stop>
@@ -545,20 +545,21 @@ function rowsInput(list,tbId,totId){
 function isKom(d){ return String(d.ket||'').toLowerCase().indexOf('komitmen')>=0; }
 function tagOf(s){ return s==='QRIS/Online'?'tq' : s==='Transfer/Tunai'?'tt' : 'tc'; }
 function colOf(s){ return s==='QRIS/Online'?'var(--qris)' : s==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
-function donut(sQ,sT,sC,sA){
+function donut(sQ,sT,sCash,sTerima,sKom){
   const R=54, C=2*Math.PI*R;
-  const fQ=sA?sQ/sA:0, fT=sA?sT/sA:0, fC=sA?sC/sA:0;
+  const fQ=sTerima?sQ/sTerima:0, fT=sTerima?sT/sTerima:0, fC=sTerima?sCash/sTerima:0;
   const pc=f=>(f*100).toFixed(1).replace('.',',');
   $('dnQ').setAttribute('stroke-dasharray',(C*fQ)+' '+C);
   $('dnT').setAttribute('stroke-dasharray',(C*fT)+' '+C);
   $('dnT').setAttribute('stroke-dashoffset',(-C*fQ));
   $('dnC').setAttribute('stroke-dasharray',(C*fC)+' '+C);
   $('dnC').setAttribute('stroke-dashoffset',(-C*(fQ+fT)));
-  $('dnMid').textContent = num(sA);
+  $('dnMid').textContent = num(sTerima);
   $('dnLg').innerHTML =
     '<div class="lgi"><i style="background:var(--qris)"></i>QRIS / Online <b>'+pc(fQ)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--trf)"></i>Transfer / Tunai <b>'+pc(fT)+'%</b></div>'+
-    '<div class="lgi"><i style="background:var(--cash)"></i>Cash / Komitmen <b>'+pc(fC)+'%</b></div>';
+    '<div class="lgi"><i style="background:var(--cash)"></i>Cash (diterima) <b>'+pc(fC)+'%</b></div>'+
+    (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (belum cair) <b>'+rp(sKom)+'</b></div>':'');
 }
 function bars(list){
   const top=list.slice().sort((a,b)=>b.nominal-a.nominal).slice(0, document.body.classList.contains('proj') ? 6 : 8);
@@ -639,6 +640,7 @@ function render(){
   const tC=data.filter(d=>d.sumber==='Cash/Komitmen');
   tQ.forEach((d,i)=>d._n=i+1); tT.forEach((d,i)=>d._n=i+1); tC.forEach((d,i)=>d._n=i+1);
   const kom=tC.filter(d=>isKom(d)), cash=tC.filter(d=>!isKom(d));
+  const dataTerima=data.filter(d=>!isKom(d));   // transaksi yang uangnya sudah masuk
   const sQ=sum(tQ), sT=sum(tT), sC=sum(tC), sKom=sum(kom), sCash=sum(cash);
   const sA=sQ+sT+sC, sTerima=sQ+sT+sCash;
   $('kTot').textContent=rp(sTerima); $('kTotN').textContent=(tQ.length+tT.length+cash.length)+' transaksi diterima';
@@ -649,16 +651,17 @@ function render(){
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
   $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
   $('barC').style.width=(sTerima?sCash/sTerima*100:33)+'%';
-  donut(sQ,sT,sC,sA);
-  bars(data);
-  trend(data);
-  goal(sA);
-  const pc=v=>sA?(v/sA*100).toFixed(1).replace('.',',')+'%':'0,0%';
+  donut(sQ,sT,sCash,sTerima,sKom);
+  bars(dataTerima);
+  trend(dataTerima);
+  goal(sTerima);
+  const pc=v=>sTerima?(v/sTerima*100).toFixed(1).replace('.',',')+'%':'0,0%';
   $('tbRekap').innerHTML=
     '<tr><td><span class="tag tq">QRIS/Online</span></td><td class="num">'+num(sQ)+'</td><td class="num">'+tQ.length+'</td><td class="num">'+pc(sQ)+'</td></tr>'+
     '<tr><td><span class="tag tt">Transfer/Tunai</span></td><td class="num">'+num(sT)+'</td><td class="num">'+tT.length+'</td><td class="num">'+pc(sT)+'</td></tr>'+
-    '<tr><td><span class="tag tc">Cash/Komitmen</span></td><td class="num">'+num(sC)+'</td><td class="num">'+tC.length+'</td><td class="num">'+pc(sC)+'</td></tr>'+
-    '<tr style="font-weight:700;color:var(--gold)"><td>TOTAL</td><td class="num">'+num(sA)+'</td><td class="num">'+data.length+'</td><td class="num">100,0%</td></tr>';
+    '<tr><td><span class="tag tc">Cash (diterima)</span></td><td class="num">'+num(sCash)+'</td><td class="num">'+cash.length+'</td><td class="num">'+pc(sCash)+'</td></tr>'+
+    '<tr style="font-weight:700;color:var(--gold)"><td>TOTAL DITERIMA</td><td class="num">'+num(sTerima)+'</td><td class="num">'+(tQ.length+tT.length+cash.length)+'</td><td class="num">100,0%</td></tr>'+
+    '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (belum cair)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
   rowsInput(tQ,'tbQ','fQTot');
   rowsInput(tT,'tbT','fTTot');
   rowsInput(tC,'tbC','fCTot');
