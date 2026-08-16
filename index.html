@@ -116,6 +116,18 @@ background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
 .dotp{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none}
 .dotp.ok{background:var(--trf)}.dotp.bad{background:var(--red)}
 #bExit{display:none}
+.timer{display:none;align-items:center;gap:14px;background:rgba(11,18,32,.55);border:1px solid rgba(251,191,36,.5);border-radius:14px;padding:8px 14px;flex:none}
+.timer .dot{width:12px;height:12px;border-radius:50%;background:var(--mut)}
+.timer.run .dot{background:var(--trf);box-shadow:0 0 10px var(--trf);animation:tp 1.2s ease-in-out infinite}
+@keyframes tp{0%,100%{opacity:1}50%{opacity:.35}}
+.timer .tv{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:#fff;line-height:1}
+.timer .tl{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700}
+body.proj .timer{display:flex}
+body.proj header{justify-content:space-between}
+body.proj .timer{padding:1vh 1.6vw;border-radius:14px}
+body.proj .timer .dot{width:1.4vh;height:1.4vh}
+body.proj .timer .tv{font-size:4.4vh}
+body.proj .timer .tl{font-size:1.5vh}
 /* ============ MODE PROYEKTOR (fokus Dana Diterima) ============ */
 body.proj{padding:0;overflow:hidden}
 body.proj .wrap{max-width:100%;height:100vh;display:flex;flex-direction:column;padding:0 12px 8px;overflow:hidden}
@@ -192,6 +204,7 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
     <h1>REKAPITULASI DANA MASUK</h1>
     <p>KONSER PENGGALANGAN DANA — GKPI JK DEPOK</p>
   </div>
+  <div class="timer" id="timerBox"><span class="dot" id="tDot"></span><div><div class="tl">Durasi Acara</div><div class="tv" id="tVal">00:00:00</div></div></div>
 </header>
 <div class="tabs">
   <button class="on" data-p="pDash">Dashboard</button>
@@ -202,13 +215,13 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
 </div>
 <div class="pane on" id="pDash">
   <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px">&#128260; Muat Ulang</button></div>
-  <div class="projbar"><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937">&#128241; Install App</button><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
+  <div class="projbar"><button type="button" class="s" id="tStart">&#9654; Mulai Acara</button><button type="button" class="s" id="tPause">&#9208; Jeda</button><button type="button" class="s" id="tReset">&#9209; Reset Waktu</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937">&#128241; Install App</button><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
   <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
   <div class="kpi">
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
       <div class="sub" id="kTotN">0 transaksi diterima</div>
       <div class="bar"><i id="barQ" style="background:var(--qris)"></i><i id="barT" style="background:var(--trf)"></i><i id="barC" style="background:var(--cash)"></i></div>
-      <div class="split"><span class="sk">Komitmen (belum diterima): <b id="kKom">Rp 0</b></span><span class="sd">Total potensi: <b id="kTerima">Rp 0</b></span></div>
+      <div class="split"><span class="sk">Komitmen (belum diterima): <b id="kKom">Rp 0</b></span><span class="sd">Total Potensi Terkumpul: <b id="kTerima">Rp 0</b></span></div>
     </div>
     <div class="card b-q"><div class="lbl">Total QRIS / Online</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
     <div class="card b-t"><div class="lbl">Total Transfer / Tunai</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
@@ -851,7 +864,17 @@ if('serviceWorker' in navigator){
     });
   });
 }
-
+/* ================= TIMER ACARA (persist di localStorage) ================= */
+const TKEY='gkpi_timer_v1';
+function tLoad(){ try{return JSON.parse(localStorage.getItem(TKEY))||{acc:0,start:null,run:false};}catch(e){return{acc:0,start:null,run:false};} }
+function tSave(s){ localStorage.setItem(TKEY, JSON.stringify(s)); }
+function tElapsed(s){ return s.acc + (s.run && s.start ? Date.now()-s.start : 0); }
+function tFmt(ms){ let t=Math.floor(ms/1000); const h=Math.floor(t/3600),m=Math.floor(t%3600/60),d=t%60; const z=n=>(n<10?'0':'')+n; return z(h)+':'+z(m)+':'+z(d); }
+function tRender(){ const s=tLoad(); const box=$('timerBox'); if($('tVal')) $('tVal').textContent=tFmt(tElapsed(s)); if(box) box.classList.toggle('run', !!s.run); }
+$('tStart') && ($('tStart').onclick=()=>{ let s=tLoad(); if(!s.run){ s.start=Date.now(); s.run=true; tSave(s); } tRender(); });
+$('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
+$('tReset') && ($('tReset').onclick=()=>{ if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
+setInterval(tRender, 1000); tRender();
 /* ================= INIT ================= */
 (function init(){
   const now=new Date();
