@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;
 --qris:#38bdf8;--trf:#34d399;--gold:#fbbf24;--red:#f87171;--cash:#c084fc}
@@ -151,7 +152,27 @@ body.proj .rt{padding:1vh 0;flex:none}
 body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
 @media(max-height:620px){body.proj .cTren{display:none}}
 @media(max-width:640px){.card .val{font-size:21px}th,td{padding:7px 5px;font-size:12px}header img{width:48px;height:48px}}
-@media print{.tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit{display:none!important}.pane{display:block!important}}
+@media print{
+  @page{size:A3 landscape;margin:10mm}
+  html,body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
+  .wrap{max-width:100%!important}
+  .tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit,.lk,#bCsv,#bPrint,#bReset,#lockH,.full{display:none!important}
+  .pane{display:none!important}
+  #pHasil,#pHasil.on{display:block!important}
+  header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,.note{color:#000!important}
+  .card{background:#fff!important;border:0!important;box-shadow:none!important;margin:0!important;padding:0!important}
+  .scroll{max-height:none!important;overflow:visible!important;border:0!important}
+  table{width:100%!important;border-collapse:collapse!important;font-size:11px!important}
+  thead{display:table-header-group!important}
+  tfoot{display:table-row-group!important}
+  tr{page-break-inside:avoid!important;break-inside:avoid!important}
+  th,td{border:1px solid #cbd5e1!important;padding:6px 8px!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th{background:#0f766e!important;color:#fff!important}
+  .tag{border:1px solid #cbd5e1!important;color:#000!important;background:#f1f5f9!important}
+  tfoot td{background:#fef9c3!important;color:#000!important;font-weight:700!important}
+  footer{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -358,7 +379,6 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
     <div class="full" style="margin-bottom:12px">
       <button type="button" class="s" id="bCsv">Unduh CSV (untuk Excel)</button>
       <button type="button" class="s" id="bPrint">Cetak / PDF</button>
-      <button type="button" class="d" id="bReset">Reset ke Data Awal</button>
       <button type="button" class="s" id="lockH">Kunci Lagi</button>
     </div>
     <div class="scroll"><table>
@@ -708,24 +728,57 @@ bind('fC','c','Cash/Komitmen','mOkC','mErrC');
 
 /* ================= AKSI HASIL ================= */
 $('bCsv').onclick=async ()=>{
-  // 1) Minta password dulu sebelum unduh
-  if(!askPass('UNDUH CSV')) return;
-  // 2) Ambil salinan TERBARU dari Google Sheet supaya CSV selalu rapi & up-to-date
-  if(apiReady){
+  if(!askPass('UNDUH EXCEL')) return;                       // minta password 3.0
+  if(typeof XLSX==='undefined'){ alert('Komponen Excel belum termuat. Pastikan ada internet, lalu coba lagi.'); return; }
+  if(apiReady){                                             // ambil salinan TERBARU dari Google Sheet
     try{ setSync('','Mengambil data terbaru dari Google Sheet…'); data=await apiGet(); render();
       setSync('ok','Data terbaru diambil • '+data.length+' transaksi'); }
-    catch(err){ alert('Gagal mengambil data terbaru: '+err.message+'\nCSV akan memakai data yang sedang tampil.'); }
+    catch(err){ alert('Gagal mengambil data terbaru: '+err.message+'\nExcel akan memakai data yang sedang tampil.'); }
   }
-  // 3) Susun & unduh CSV (rapi, terurut waktu, dengan kolom Status)
-  const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status'];
-  const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima']);
-  const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
-  const stamp=new Date().toISOString().slice(0,10);
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='rekap-dana-'+stamp+'.csv'; a.click();
+  const tot=sum(data);
+  const terima=data.filter(d=>!isKom(d)).reduce((s,d)=>s+Number(d.nominal||0),0);
+  const kom=data.filter(d=>isKom(d)).reduce((s,d)=>s+Number(d.nominal||0),0);
+  const aoa=[];
+  aoa.push(['REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK']);
+  aoa.push(['Diekspor: '+new Date().toLocaleString('id-ID')]);
+  aoa.push([]);
+  aoa.push(['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status']);
+  data.forEach((d,i)=>aoa.push([i+1, dmy(d.tanggal)+' '+d.waktu, d.sumber, d.nama, d.ket, Number(d.nominal)||0, d.petugas, isKom(d)?'Komitmen':'Diterima']));
+  const totRow=aoa.length;
+  aoa.push(['','','','','TOTAL SELURUHNYA', tot,'','']);
+  aoa.push(['','','','','- Sudah diterima (kas/bank)', terima,'','']);
+  aoa.push(['','','','','- Masih komitmen (belum diterima)', kom,'','']);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:5},{wch:16},{wch:16},{wch:26},{wch:14},{wch:16},{wch:16},{wch:12}];
+  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:1,c:0},e:{r:1,c:7}}];
+  const R=XLSX.utils.decode_range(ws['!ref']);
+  const money='#,##0';
+  const brdr={style:'thin',color:{rgb:'D1D5DB'}};
+  for(let r=0;r<=R.e.r;r++){ for(let c=0;c<=R.e.c;c++){
+    const ref=XLSX.utils.encode_cell({r,c});
+    if(!ws[ref]) ws[ref]={t:'s',v:''};
+    const cell=ws[ref]; cell.s=cell.s||{};
+    if(r===0){ cell.s={font:{bold:true,sz:14,color:{rgb:'1F2937'}},alignment:{horizontal:'center'}}; }
+    else if(r===1){ cell.s={font:{italic:true,sz:9,color:{rgb:'6B7280'}},alignment:{horizontal:'center'}}; }
+    else if(r===3){ cell.s={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0F766E'}},alignment:{horizontal:c===5?'right':'left'},border:{top:brdr,bottom:brdr,left:brdr,right:brdr}}; }
+    else if(r>=totRow){ cell.s={font:{bold:true,color:{rgb:'B45309'}}}; if(c===5) cell.z=money; }
+    else if(r>3 && r<totRow){ if(c===5){cell.z=money;cell.s={alignment:{horizontal:'right'}};} else if(c===0){cell.s={alignment:{horizontal:'center'}};} cell.s.border={bottom:{style:'hair',color:{rgb:'E5E7EB'}}}; }
+  }}
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Rekap Dana');
+  XLSX.writeFile(wb, 'rekap-dana-'+new Date().toISOString().slice(0,10)+'.xlsx');
 };
-$('bPrint').onclick=()=>window.print();
+$('bPrint').onclick=async ()=>{
+  if(!askPass('CETAK / PDF')) return;                 // minta password 3.0
+  if(apiReady){                                       // ambil data terbaru dulu
+    try{ setSync('','Mengambil data terbaru dari Google Sheet…'); data=await apiGet(); render();
+      setSync('ok','Data terbaru diambil • '+data.length+' transaksi'); }
+    catch(err){ /* kalau gagal, cetak data yang tampil */ }
+  }
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  $('pHasil').classList.add('on');
+  setTimeout(()=>window.print(), 300);                // beri jeda agar tabel selesai render
+};
 $('bRefresh').onclick=()=>reload();
 
 /* ================= MODE PROYEKTOR ================= */

@@ -141,7 +141,27 @@ body.proj .rt{padding:1vh 0;flex:none}
 body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
 @media(max-height:620px){body.proj .cTren{display:none}}
 @media(max-width:640px){.card .val{font-size:21px}th,td{padding:7px 5px;font-size:12px}header img{width:48px;height:48px}}
-@media print{.tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit{display:none!important}.pane{display:block!important}}
+@media print{
+  @page{size:A3 landscape;margin:10mm}
+  html,body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
+  .wrap{max-width:100%!important}
+  .tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit,.lk,#bCsv,#bPrint,#bReset,#lockH,.full{display:none!important}
+  .pane{display:none!important}
+  #pHasil,#pHasil.on{display:block!important}
+  header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,.note{color:#000!important}
+  .card{background:#fff!important;border:0!important;box-shadow:none!important;margin:0!important;padding:0!important}
+  .scroll{max-height:none!important;overflow:visible!important;border:0!important}
+  table{width:100%!important;border-collapse:collapse!important;font-size:11px!important}
+  thead{display:table-header-group!important}
+  tfoot{display:table-row-group!important}
+  tr{page-break-inside:avoid!important;break-inside:avoid!important}
+  th,td{border:1px solid #cbd5e1!important;padding:6px 8px!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th{background:#0f766e!important;color:#fff!important}
+  .tag{border:1px solid #cbd5e1!important;color:#000!important;background:#f1f5f9!important}
+  tfoot td{background:#fef9c3!important;color:#000!important;font-weight:700!important}
+  footer{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -704,7 +724,17 @@ $('bCsv').onclick=()=>{
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='rekap-dana-masuk.csv'; a.click();
 };
-$('bPrint').onclick=()=>window.print();
+$('bPrint').onclick=async ()=>{
+  if(!askPass('CETAK / PDF')) return;                 // minta password 3.0
+  if(apiReady){                                       // ambil data terbaru dulu
+    try{ setSync('','Mengambil data terbaru dari Google Sheet…'); data=await apiGet(); render();
+      setSync('ok','Data terbaru diambil • '+data.length+' transaksi'); }
+    catch(err){ /* kalau gagal, cetak data yang tampil */ }
+  }
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  $('pHasil').classList.add('on');
+  setTimeout(()=>window.print(), 300);                // beri jeda agar tabel selesai render
+};
 $('bRefresh').onclick=()=>reload();
 
 /* ================= MODE PROYEKTOR ================= */
