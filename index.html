@@ -57,9 +57,9 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
 th{background:#0b1220;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0}
 td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
 tfoot td{font-weight:700;color:var(--gold);border-top:2px solid var(--line)}
-.tag{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.tag{display:inline-block;white-space:nowrap;line-height:1.4;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .tq{background:rgba(56,189,248,.18);color:var(--qris)}.tt{background:rgba(52,211,153,.18);color:var(--trf)}
-.tc{background:rgba(192,132,252,.18);color:var(--cash)}.tk{background:rgba(251,191,36,.18);color:var(--gold)}.tr{background:rgba(52,211,153,.18);color:var(--trf)}
+.tc{background:rgba(192,132,252,.18);color:var(--cash)}.tk{background:rgba(251,191,36,.18);color:var(--gold)}.trc{background:rgba(52,211,153,.18);color:var(--trf)}
 .scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}
 .msg{padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;display:none}
 .ok{background:rgba(52,211,153,.15);color:var(--trf);border:1px solid var(--trf)}
@@ -658,7 +658,7 @@ function render(){
     '<td><span class="tag '+tagOf(d.sumber)+'">'+esc(d.sumber)+'</span></td>'+
     '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
     '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
-    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag tr">Diterima</span>')+'</td></tr>').join('')
+    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag trc">Diterima</span>')+'</td></tr>').join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
   $('fHTot').textContent=num(sA);
   $('fHTerima').textContent=num(sTerima); $('fHKom').textContent=num(sKom);
@@ -707,22 +707,25 @@ bind('fT','t','Transfer/Tunai','mOkT','mErrT');
 bind('fC','c','Cash/Komitmen','mOkC','mErrC');
 
 /* ================= AKSI HASIL ================= */
-$('bCsv').onclick=()=>{
+$('bCsv').onclick=async ()=>{
+  // 1) Minta password dulu sebelum unduh
+  if(!askPass('UNDUH CSV')) return;
+  // 2) Ambil salinan TERBARU dari Google Sheet supaya CSV selalu rapi & up-to-date
+  if(apiReady){
+    try{ setSync('','Mengambil data terbaru dari Google Sheet…'); data=await apiGet(); render();
+      setSync('ok','Data terbaru diambil • '+data.length+' transaksi'); }
+    catch(err){ alert('Gagal mengambil data terbaru: '+err.message+'\nCSV akan memakai data yang sedang tampil.'); }
+  }
+  // 3) Susun & unduh CSV (rapi, terurut waktu, dengan kolom Status)
   const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status'];
   const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima']);
   const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const stamp=new Date().toISOString().slice(0,10);
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='rekap-dana-masuk.csv'; a.click();
+  a.download='rekap-dana-'+stamp+'.csv'; a.click();
 };
 $('bPrint').onclick=()=>window.print();
-$('bReset').onclick=async ()=>{
-  if(!apiReady){ alert('Belum tersambung ke Google Sheet.'); return; }
-  if(confirm('Kembalikan Google Sheet ke DATA AWAL? Semua input baru akan hilang.') && askPass('RESET data')){
-    try{ setSync('','Mereset…'); data=await apiPost({action:'replaceAll',list:SEED}); render(); setSync('ok','Direset ke data awal.'); }
-    catch(err){ alert('Gagal reset: '+err.message); reload(); }
-  }
-};
 $('bRefresh').onclick=()=>reload();
 
 /* ================= MODE PROYEKTOR ================= */

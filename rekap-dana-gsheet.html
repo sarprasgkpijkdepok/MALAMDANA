@@ -348,7 +348,6 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
     <div class="full" style="margin-bottom:12px">
       <button type="button" class="s" id="bCsv">Unduh CSV (untuk Excel)</button>
       <button type="button" class="s" id="bPrint">Cetak / PDF</button>
-      <button type="button" class="d" id="bReset">Reset ke Data Awal</button>
       <button type="button" class="s" id="lockH">Kunci Lagi</button>
     </div>
     <div class="scroll"><table>
@@ -706,13 +705,6 @@ $('bCsv').onclick=()=>{
   a.download='rekap-dana-masuk.csv'; a.click();
 };
 $('bPrint').onclick=()=>window.print();
-$('bReset').onclick=async ()=>{
-  if(!apiReady){ alert('Belum tersambung ke Google Sheet.'); return; }
-  if(confirm('Kembalikan Google Sheet ke DATA AWAL? Semua input baru akan hilang.') && askPass('RESET data')){
-    try{ setSync('','Mereset…'); data=await apiPost({action:'replaceAll',list:SEED}); render(); setSync('ok','Direset ke data awal.'); }
-    catch(err){ alert('Gagal reset: '+err.message); reload(); }
-  }
-};
 $('bRefresh').onclick=()=>reload();
 
 /* ================= MODE PROYEKTOR ================= */
