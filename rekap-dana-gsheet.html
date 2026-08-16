@@ -185,14 +185,14 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
   <div class="projbar"><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
   <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
   <div class="kpi">
-    <div class="card b-tot"><div class="lbl">Total Dana Masuk</div><div class="val" id="kTot">Rp 0</div>
-      <div class="sub" id="kTotN">0 transaksi</div>
+    <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
+      <div class="sub" id="kTotN">0 transaksi diterima</div>
       <div class="bar"><i id="barQ" style="background:var(--qris)"></i><i id="barT" style="background:var(--trf)"></i><i id="barC" style="background:var(--cash)"></i></div>
-      <div class="split"><span class="sd">Diterima: <b id="kTerima">Rp 0</b></span><span class="sk">Komitmen: <b id="kKom">Rp 0</b></span></div>
+      <div class="split"><span class="sk">Komitmen (belum cair): <b id="kKom">Rp 0</b></span><span class="sd">Total potensi: <b id="kTerima">Rp 0</b></span></div>
     </div>
     <div class="card b-q"><div class="lbl">Total QRIS / Online</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
     <div class="card b-t"><div class="lbl">Total Transfer / Tunai</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
-    <div class="card b-c"><div class="lbl">Total Cash / Komitmen</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">0 transaksi</div></div>
+    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen belum cair: Rp 0</div></div>
   </div>
   <div class="card cRekap">
     <h2>Rekap per Sumber</h2>
@@ -641,14 +641,14 @@ function render(){
   const kom=tC.filter(d=>isKom(d)), cash=tC.filter(d=>!isKom(d));
   const sQ=sum(tQ), sT=sum(tT), sC=sum(tC), sKom=sum(kom), sCash=sum(cash);
   const sA=sQ+sT+sC, sTerima=sQ+sT+sCash;
-  $('kTot').textContent=rp(sA); $('kTotN').textContent=data.length+' transaksi';
+  $('kTot').textContent=rp(sTerima); $('kTotN').textContent=(tQ.length+tT.length+cash.length)+' transaksi diterima';
   $('kQ').textContent=rp(sQ);   $('kQN').textContent=tQ.length+' transaksi';
   $('kT').textContent=rp(sT);   $('kTN').textContent=tT.length+' transaksi';
-  $('kC').textContent=rp(sC);   $('kCN').textContent=tC.length+' transaksi';
-  $('kTerima').textContent=rp(sTerima); $('kKom').textContent=rp(sKom);
-  $('barQ').style.width=(sA?sQ/sA*100:34)+'%';
-  $('barT').style.width=(sA?sT/sA*100:33)+'%';
-  $('barC').style.width=(sA?sC/sA*100:33)+'%';
+  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen belum cair: '+rp(sKom);
+  $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
+  $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
+  $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
+  $('barC').style.width=(sTerima?sCash/sTerima*100:33)+'%';
   donut(sQ,sT,sC,sA);
   bars(data);
   trend(data);
