@@ -188,11 +188,11 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
       <div class="sub" id="kTotN">0 transaksi diterima</div>
       <div class="bar"><i id="barQ" style="background:var(--qris)"></i><i id="barT" style="background:var(--trf)"></i><i id="barC" style="background:var(--cash)"></i></div>
-      <div class="split"><span class="sk">Komitmen (belum cair): <b id="kKom">Rp 0</b></span><span class="sd">Total potensi: <b id="kTerima">Rp 0</b></span></div>
+      <div class="split"><span class="sk">Komitmen (belum diterima): <b id="kKom">Rp 0</b></span><span class="sd">Total potensi: <b id="kTerima">Rp 0</b></span></div>
     </div>
     <div class="card b-q"><div class="lbl">Total QRIS / Online</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
     <div class="card b-t"><div class="lbl">Total Transfer / Tunai</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
-    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen belum cair: Rp 0</div></div>
+    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen belum diterima: Rp 0</div></div>
   </div>
   <div class="card cRekap">
     <h2>Rekap per Sumber</h2>
@@ -559,7 +559,7 @@ function donut(sQ,sT,sCash,sTerima,sKom){
     '<div class="lgi"><i style="background:var(--qris)"></i>QRIS / Online <b>'+pc(fQ)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--trf)"></i>Transfer / Tunai <b>'+pc(fT)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--cash)"></i>Cash (diterima) <b>'+pc(fC)+'%</b></div>'+
-    (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (belum cair) <b>'+rp(sKom)+'</b></div>':'');
+    (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (belum diterima) <b>'+rp(sKom)+'</b></div>':'');
 }
 function bars(list){
   const top=list.slice().sort((a,b)=>b.nominal-a.nominal).slice(0, document.body.classList.contains('proj') ? 6 : 8);
@@ -646,7 +646,7 @@ function render(){
   $('kTot').textContent=rp(sTerima); $('kTotN').textContent=(tQ.length+tT.length+cash.length)+' transaksi diterima';
   $('kQ').textContent=rp(sQ);   $('kQN').textContent=tQ.length+' transaksi';
   $('kT').textContent=rp(sT);   $('kTN').textContent=tT.length+' transaksi';
-  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen belum cair: '+rp(sKom);
+  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen belum diterima: '+rp(sKom);
   $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
   $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
@@ -661,7 +661,7 @@ function render(){
     '<tr><td><span class="tag tt">Transfer/Tunai</span></td><td class="num">'+num(sT)+'</td><td class="num">'+tT.length+'</td><td class="num">'+pc(sT)+'</td></tr>'+
     '<tr><td><span class="tag tc">Cash (diterima)</span></td><td class="num">'+num(sCash)+'</td><td class="num">'+cash.length+'</td><td class="num">'+pc(sCash)+'</td></tr>'+
     '<tr style="font-weight:700;color:var(--gold)"><td>TOTAL DITERIMA</td><td class="num">'+num(sTerima)+'</td><td class="num">'+(tQ.length+tT.length+cash.length)+'</td><td class="num">100,0%</td></tr>'+
-    '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (belum cair)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
+    '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (belum diterima)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
   rowsInput(tQ,'tbQ','fQTot');
   rowsInput(tT,'tbT','fTTot');
   rowsInput(tC,'tbC','fCTot');
