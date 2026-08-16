@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK</title>
 <!-- ===== PWA (bisa di-install ke HP / laptop) ===== -->
-./manifest.json
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0f766e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Rekap Dana">
-./apple-touch-icon.png
-./favicon-64.png
-./icon-192.png
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;
 --qris:#38bdf8;--trf:#34d399;--gold:#fbbf24;--red:#f87171;--cash:#c084fc}
@@ -414,7 +414,7 @@ document.getElementById('logo').src=LOGO;
 /* ================= KONFIGURASI ================= */
 /* GANTI baris di bawah dengan URL Web App Google Apps Script Anda,
    contoh: https://script.google.com/macros/s/AKfycb...../exec  */
-const API = 'https://script.google.com/macros/s/AKfycbymr_oGTfYyhgMN40ASA2ahFpgLYv8GVBsV5qIKeQMSU0W3cL3Hs1cssKWqRdpiimJ6-g/exec';
+const API = 'PASTE_URL_WEB_APP_ANDA_DI_SINI';
 
 const PASS='3.0';                 // password tab / edit / hapus
 const GKEY='gkpi_depok_target_v3';// target disimpan lokal per perangkat
@@ -708,3 +708,92 @@ bind('fC','c','Cash/Komitmen','mOkC','mErrC');
 
 /* ================= AKSI HASIL ================= */
 $('bCsv').onclick=()=>{
+  const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status'];
+  const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima']);
+  const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='rekap-dana-masuk.csv'; a.click();
+};
+$('bPrint').onclick=()=>window.print();
+$('bReset').onclick=async ()=>{
+  if(!apiReady){ alert('Belum tersambung ke Google Sheet.'); return; }
+  if(confirm('Kembalikan Google Sheet ke DATA AWAL? Semua input baru akan hilang.') && askPass('RESET data')){
+    try{ setSync('','Mereset…'); data=await apiPost({action:'replaceAll',list:SEED}); render(); setSync('ok','Direset ke data awal.'); }
+    catch(err){ alert('Gagal reset: '+err.message); reload(); }
+  }
+};
+$('bRefresh').onclick=()=>reload();
+
+/* ================= MODE PROYEKTOR ================= */
+function setProj(on){
+  if(on){
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+    $('pDash').classList.add('on'); document.querySelector('.tabs button').classList.add('on');
+    document.body.classList.add('proj');
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.body.classList.remove('proj');
+    if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  }
+}
+$('bProj').onclick=()=>{setProj(true);render();}; $('bExit').onclick=()=>{setProj(false);render();};
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement){ document.body.classList.remove('proj'); render(); } });
+$('bGoal').onclick=()=>{
+  const now=Number(localStorage.getItem(GKEY)||0);
+  const p=prompt('Target dana (angka polos, isi 0 untuk menyembunyikan):', now||'');
+  if(p===null) return;
+  const g=Number(String(p).replace(/[^0-9]/g,''));
+  localStorage.setItem(GKEY, g>0?g:0); render();
+};
+let rsz; window.addEventListener('resize',()=>{ clearTimeout(rsz); rsz=setTimeout(()=>trend(data),150); });
+$('bProj').addEventListener('click',()=>setTimeout(()=>trend(data),350));
+
+/* ================= PWA: INSTALL & SERVICE WORKER ================= */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault(); deferredPrompt=e;
+  const b=$('bInstall'); if(b) b.style.display='inline-block';
+});
+(function(){
+  const b=$('bInstall'); if(!b) return;
+  b.onclick=async ()=>{
+    if(!deferredPrompt){
+      alert('Untuk memasang:\n• Android/Chrome: menu ⋮ → "Tambahkan ke layar utama".\n• iPhone/Safari: tombol Bagikan → "Tambah ke Layar Utama".\n• Laptop: ikon install di ujung kanan address bar.');
+      return;
+    }
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null; b.style.display='none';
+  };
+})();
+window.addEventListener('appinstalled',()=>{ const b=$('bInstall'); if(b) b.style.display='none'; });
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    // updateViaCache:'none' -> browser tidak meng-cache sw.js, selalu cek versi terbaru
+    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
+      reg.update();                              // paksa cek update saat buka
+      setInterval(()=>reg.update(), 60*60*1000); // cek tiap 1 jam bila app dibiarkan terbuka
+    }).catch(err=>console.warn('SW gagal:',err));
+    // Bila service worker baru mengambil alih, muat ulang sekali agar konten paling baru
+    let reloaded=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(reloaded) return; reloaded=true; location.reload();
+    });
+  });
+}
+
+/* ================= INIT ================= */
+(function init(){
+  const now=new Date();
+  const d=now.toISOString().slice(0,10);
+  const w=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  $('qTgl').value=d; $('tTgl').value=d; $('cTgl').value=d; $('qWkt').value=w; $('tWkt').value=w; $('cWkt').value=w;
+  reload();
+  // sinkron otomatis tiap 20 detik supaya dashboard proyektor ikut ter-update
+  setInterval(()=>{ if(apiReady) reload(); }, 20000);
+})();
+</script>
+</body>
+</html>
