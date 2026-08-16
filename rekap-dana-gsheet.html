@@ -105,40 +105,49 @@ background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
 .dotp{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none}
 .dotp.ok{background:var(--trf)}.dotp.bad{background:var(--red)}
 #bExit{display:none}
+/* ============ MODE PROYEKTOR (fokus Dana Diterima) ============ */
 body.proj{padding:0;overflow:hidden}
-body.proj .wrap{max-width:100%;height:100vh;display:flex;flex-direction:column;padding:0 10px 6px;overflow:hidden}
-body.proj .tabs,body.proj footer,body.proj .projbar,body.proj .syncwrap,body.proj .cRekap{display:none}
+body.proj .wrap{max-width:100%;height:100vh;display:flex;flex-direction:column;padding:0 12px 8px;overflow:hidden}
+body.proj .tabs,body.proj footer,body.proj .projbar,body.proj .syncwrap,body.proj .cRekap,body.proj #goalBox,body.proj .cTren{display:none!important}
 body.proj #bExit{display:block;position:fixed;right:12px;top:12px;z-index:99;opacity:.2;padding:6px 12px}
 body.proj #bExit:hover{opacity:1}
-body.proj #pDash{flex:1;display:flex;flex-direction:column;min-height:0;gap:1vh}
-body.proj header{border-radius:0;padding:1.1vh 12px;margin-bottom:1vh;flex:none;gap:12px}
-body.proj header img{width:7vh;height:7vh;padding:3px}
-body.proj header h1{font-size:3.4vh}
-body.proj header p{font-size:1.7vh}
-body.proj .card{padding:1.2vh 14px;margin-bottom:0;border-radius:10px}
-body.proj .kpi{grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:0;flex:none}
-body.proj .split{font-size:1.5vh;margin-top:.6vh}
-body.proj .card .lbl{font-size:1.5vh;letter-spacing:1px}
-body.proj .card .val{font-size:5.2vh;margin-top:2px}
-body.proj .card .sub{font-size:1.6vh;margin-top:2px}
-body.proj .bar{height:1.4vh;margin-top:6px}
-body.proj h2{font-size:2vh;margin:0 0 .8vh;padding-bottom:.5vh}
-body.proj .g2{gap:10px;flex:1;min-height:0;grid-template-columns:1fr 1fr}
-body.proj .g2>.card{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-body.proj .dnwrap{flex:1;min-height:0;gap:14px}
-body.proj .dn{width:auto;height:100%;max-height:26vh;flex:1;min-width:0}
-body.proj .dnv{font-size:16px}
-body.proj .lgi{font-size:2vh}
+body.proj header{border-radius:0 0 14px 14px;padding:1.4vh 20px;margin-bottom:1.2vh;flex:none;gap:18px}
+body.proj header img{width:8vh;height:8vh;padding:3px}
+body.proj header h1{font-size:3.6vh;letter-spacing:.5px}
+body.proj header p{font-size:1.9vh}
+body.proj #pDash{flex:1;display:grid;min-height:0;gap:1.1vh 1.1vw;grid-template-columns:1.18fr 1fr 1fr;grid-template-rows:1fr 1fr auto auto}
+body.proj .kpi{display:contents}
+body.proj .g2{display:contents}
+body.proj .card{margin:0;border-radius:14px;min-height:0;overflow:hidden}
+body.proj .b-tot{grid-column:1;grid-row:1 / span 2;background:linear-gradient(160deg,#134e4a,#0b3b39 62%,#0b1220);border:2px solid var(--gold);display:flex;flex-direction:column;justify-content:center;padding:2.4vh 2vw;position:relative;overflow:hidden}
+body.proj .b-tot::after{content:"";position:absolute;right:-4vw;top:-4vw;width:20vw;height:20vw;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.16),transparent 70%)}
+body.proj .b-tot .lbl{font-size:2.3vh;letter-spacing:3px;color:var(--gold);font-weight:700}
+body.proj .b-tot .val{font-size:6.8vh;line-height:1;font-weight:800;margin:.4vh 0;letter-spacing:-1px;white-space:nowrap}
+body.proj .b-tot .sub{font-size:2vh;color:#cbd5e1}
+body.proj .b-tot .bar{height:2.1vh;border-radius:1vh;margin:2.2vh 0 1vh}
+body.proj .b-tot .split{font-size:2vh;gap:1vh 2vw;margin-top:1vh}
+body.proj .b-tot .split b{font-size:3vh;display:block;margin-top:.3vh}
+body.proj .b-tot .split .sk{order:2;flex:1;background:rgba(251,191,36,.10);border:1px dashed var(--gold);border-radius:12px;padding:1.2vh 1.4vw;color:var(--gold)}
+body.proj .b-tot .split .sk b{color:var(--gold)}
+body.proj .b-tot .split .sd{order:1;flex:1}
+body.proj .g2>.card:nth-child(1){grid-column:2 / span 2;grid-row:1;display:flex;flex-direction:column}
+body.proj .g2>.card:nth-child(2){grid-column:2 / span 2;grid-row:2;display:flex;flex-direction:column}
+body.proj h2{font-size:2.1vh;margin:0 0 1vh;padding-bottom:.7vh}
+body.proj .dnwrap{flex:1;min-height:0;gap:2vw}
+body.proj .dn{width:auto;height:100%;max-height:24vh;flex:none;aspect-ratio:1/1}
+body.proj .lgi{font-size:2.1vh}
 body.proj .bkw{flex:1;min-height:0;justify-content:space-evenly;gap:0}
-body.proj .bk{font-size:1.8vh}
-body.proj .bkt{height:1.6vh}
-body.proj .cTren{flex:none}
-body.proj .tr{height:17vh}body.proj .yl,body.proj .xl{font-size:15px}body.proj .axt{font-size:13px}
-body.proj .cTren .note{font-size:1.5vh}
-body.proj .gbar{height:2.6vh;border-radius:1.3vh}body.proj .gbar i{border-radius:1.3vh}
-body.proj .grow{font-size:1.7vh;margin-top:.5vh}body.proj .grow b{font-size:2.4vh}
-body.proj .rt{padding:1vh 0;flex:none}
-body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
+body.proj .bk{font-size:2vh}
+body.proj .bkt{height:1.8vh}
+body.proj .b-q{grid-column:1;grid-row:3}
+body.proj .b-t{grid-column:2;grid-row:3}
+body.proj .b-c{grid-column:3;grid-row:3}
+body.proj .kpi>.card:not(.b-tot){padding:1.3vh 1.4vw}
+body.proj .b-q .lbl,body.proj .b-t .lbl,body.proj .b-c .lbl{font-size:1.6vh}
+body.proj .b-q .val,body.proj .b-t .val,body.proj .b-c .val{font-size:3.6vh}
+body.proj .b-q .sub,body.proj .b-t .sub,body.proj .b-c .sub{font-size:1.5vh}
+body.proj .rt{grid-column:1 / -1;grid-row:4;padding:1vh 0}
+body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
 @media(max-height:620px){body.proj .cTren{display:none}}
 @media(max-width:640px){.card .val{font-size:21px}th,td{padding:7px 5px;font-size:12px}header img{width:48px;height:48px}}
 @media print{
@@ -562,7 +571,7 @@ function donut(sQ,sT,sCash,sTerima,sKom){
     (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (belum diterima) <b>'+rp(sKom)+'</b></div>':'');
 }
 function bars(list){
-  const top=list.slice().sort((a,b)=>b.nominal-a.nominal).slice(0, document.body.classList.contains('proj') ? 6 : 8);
+  const top=list.slice().sort((a,b)=>b.nominal-a.nominal).slice(0,5);
   if(!top.length){ $('bkList').innerHTML='<div class="bkE">Belum ada transaksi.</div>'; return; }
   const mx=top[0].nominal||1;
   $('bkList').innerHTML=top.map((d,i)=>
