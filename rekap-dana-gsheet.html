@@ -105,6 +105,22 @@ background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
 .dotp{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none}
 .dotp.ok{background:var(--trf)}.dotp.bad{background:var(--red)}
 #bExit{display:none}
+/* ==== Animasi donasi baru (celebration) ==== */
+#celebrate{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);z-index:9999;
+min-width:44vw;max-width:74vw;padding:3.4vh 4vw;border-radius:22px;text-align:center;
+background:linear-gradient(150deg,#0f766e,#134e4a 60%,#0b1220);border:3px solid var(--gold);
+box-shadow:0 20px 80px rgba(0,0,0,.6),0 0 60px rgba(251,191,36,.35);opacity:0}
+#celebrate.show{display:block;animation:celIn .5s cubic-bezier(.2,1.3,.4,1) forwards}
+#celebrate.hide{animation:celOut .45s ease forwards}
+@keyframes celIn{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes celOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(.85)}}
+#celebrate .ic{font-size:8vh;line-height:1;margin-bottom:1vh}
+#celebrate .t1{font-size:2.6vh;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700}
+#celebrate .via{display:inline-block;margin:1.4vh 0;padding:.8vh 2.4vw;border-radius:14px;font-size:4.6vh;font-weight:800}
+#celebrate .amt{font-size:7vh;font-weight:800;color:#fff;line-height:1;margin:.6vh 0}
+#celebrate .nm{font-size:3vh;color:#cbd5e1}
+/* hanya tampil di mode proyektor */
+body:not(.proj) #celebrate{display:none!important}
 .timer{display:none;align-items:center;gap:14px;background:rgba(11,18,32,.55);border:1px solid rgba(251,191,36,.5);border-radius:14px;padding:8px 14px;flex:none}
 .timer .dot{width:12px;height:12px;border-radius:50%;background:var(--mut)}
 .timer.run .dot{background:var(--trf);box-shadow:0 0 10px var(--trf);animation:tp 1.2s ease-in-out infinite}
@@ -403,6 +419,13 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
   </div>
 </div>
 <footer>Data tersimpan terpusat di Google Sheet. Semua perangkat yang membuka dashboard ini melihat data yang sama.</footer>
+<div id="celebrate">
+  <div class="ic">&#127881;</div>
+  <div class="t1">Telah Diterima Dana Melalui</div>
+  <div class="via" id="celVia"></div>
+  <div class="amt" id="celAmt"></div>
+  <div class="nm" id="celNm"></div>
+</div>
 </div>
 <script>
 /* ====== LOGO (tertanam, tanpa file terpisah) ====== */
@@ -490,6 +513,7 @@ async function reload(){
     setSync('','Menyinkron dari Google Sheet…');
     data=await apiGet();
     render();
+    detectNew();
     setSync('ok','Tersambung ke Google Sheet • '+data.length+' transaksi • '+new Date().toLocaleTimeString('id-ID'));
   }catch(err){
     data=SEED.slice(); render();
@@ -797,15 +821,45 @@ $('tStart') && ($('tStart').onclick=()=>{ let s=tLoad(); if(!s.run){ s.start=Dat
 $('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
 $('tReset') && ($('tReset').onclick=()=>{ if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
 setInterval(tRender, 1000); tRender();
+/* ================= ANIMASI DONASI BARU (mode proyektor) ================= */
+let knownIds=null;               // null = belum load pertama
+let celQueue=[], celBusy=false;
+function celKind(d){ return isKom(d)?'KOMITMEN' : d.sumber==='QRIS/Online'?'QRIS / ONLINE' : d.sumber==='Transfer/Tunai'?'TRANSFER / TUNAI' : 'CASH'; }
+function celColor(d){ return isKom(d)?'var(--gold)' : d.sumber==='QRIS/Online'?'var(--qris)' : d.sumber==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
+function detectNew(){
+  if(knownIds===null){ knownIds=new Set(data.map(d=>d.id)); return; }  // load pertama: catat saja, jangan animasi
+  data.forEach(d=>{ if(!knownIds.has(d.id)){ knownIds.add(d.id); if(document.body.classList.contains('proj')) celQueue.push(d); } });
+  if(!celBusy) celNext();
+}
+function celNext(){
+  const box=$('celebrate'); if(!box) return;
+  if(!celQueue.length){ celBusy=false; return; }
+  celBusy=true;
+  const d=celQueue.shift(), col=celColor(d);
+  const via=$('celVia'); via.textContent=celKind(d);
+  via.style.color=col; via.style.background='rgba(148,163,184,.12)'; via.style.border='2px solid '+col;
+  $('celAmt').textContent=rp(d.nominal);
+  $('celNm').innerHTML = 'dari <b>'+esc(d.nama)+'</b> — '+(isKom(d)?'komitmen dukungan':'terima kasih!')+' &#128591;';
+  box.classList.remove('hide'); box.classList.add('show');
+  setTimeout(()=>{ box.classList.remove('show'); box.classList.add('hide');
+    setTimeout(()=>{ box.classList.remove('hide'); celNext(); }, 500);
+  }, 6000);
+}
 /* ================= INIT ================= */
 (function init(){
   const now=new Date();
   const d=now.toISOString().slice(0,10);
   const w=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   $('qTgl').value=d; $('tTgl').value=d; $('cTgl').value=d; $('qWkt').value=w; $('tWkt').value=w; $('cWkt').value=w;
-  reload();
-  // sinkron otomatis tiap 20 detik supaya dashboard proyektor ikut ter-update
-  setInterval(()=>{ if(apiReady) reload(); }, 20000);
+    reload();
+  // Refresh adaptif: 10 detik saat MODE PROYEKTOR aktif, 20 detik saat normal.
+  let _tick=0;
+  setInterval(()=>{
+    if(!apiReady) return;
+    _tick++;
+    const proj=document.body.classList.contains('proj');
+    if(proj || _tick%2===0){ reload(); }  // proyektor: tiap 10s • normal: tiap 20s
+  }, 10000);
 })();
 </script>
 </body>
