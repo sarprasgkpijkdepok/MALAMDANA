@@ -2,8 +2,18 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK</title>
+<!-- ===== PWA (bisa di-install ke HP / laptop) ===== -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rekap Dana">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;
 --qris:#38bdf8;--trf:#34d399;--gold:#fbbf24;--red:#f87171;--cash:#c084fc}
@@ -162,7 +172,7 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.6vh}
 </div>
 <div class="pane on" id="pDash">
   <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px">&#128260; Muat Ulang</button></div>
-  <div class="projbar"><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
+  <div class="projbar"><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937">&#128241; Install App</button><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
   <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
   <div class="kpi">
     <div class="card b-tot"><div class="lbl">Total Dana Masuk</div><div class="val" id="kTot">Rp 0</div>
@@ -739,6 +749,31 @@ $('bGoal').onclick=()=>{
 };
 let rsz; window.addEventListener('resize',()=>{ clearTimeout(rsz); rsz=setTimeout(()=>trend(data),150); });
 $('bProj').addEventListener('click',()=>setTimeout(()=>trend(data),350));
+
+/* ================= PWA: INSTALL & SERVICE WORKER ================= */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault(); deferredPrompt=e;
+  const b=$('bInstall'); if(b) b.style.display='inline-block';
+});
+(function(){
+  const b=$('bInstall'); if(!b) return;
+  b.onclick=async ()=>{
+    if(!deferredPrompt){
+      alert('Untuk memasang:\n• Android/Chrome: menu ⋮ → "Tambahkan ke layar utama".\n• iPhone/Safari: tombol Bagikan → "Tambah ke Layar Utama".\n• Laptop: ikon install di ujung kanan address bar.');
+      return;
+    }
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null; b.style.display='none';
+  };
+})();
+window.addEventListener('appinstalled',()=>{ const b=$('bInstall'); if(b) b.style.display='none'; });
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('SW gagal:',err));
+  });
+}
 
 /* ================= INIT ================= */
 (function init(){
