@@ -124,6 +124,7 @@ box-shadow:0 20px 80px rgba(0,0,0,.6),0 0 60px rgba(251,191,36,.35);opacity:0}
 #celebrate .via{display:inline-block;margin:1.4vh 0;padding:.8vh 2.4vw;border-radius:14px;font-size:4.6vh;font-weight:800}
 #celebrate .amt{font-size:7vh;font-weight:800;color:#fff;line-height:1;margin:.6vh 0}
 #celebrate .nm{font-size:3vh;color:#cbd5e1}
+#celebrate .bless{font-size:3.2vh;font-weight:800;color:var(--gold);margin-top:1.4vh;letter-spacing:.5px}
 /* hanya tampil di mode proyektor */
 body:not(.proj) #celebrate{display:none!important}
 .timer{display:none;align-items:center;gap:14px;background:rgba(11,18,32,.55);border:1px solid rgba(251,191,36,.5);border-radius:14px;padding:8px 14px;flex:none}
@@ -518,6 +519,7 @@ body.proj #pjExit:hover{opacity:1}
   <div class="via" id="celVia"></div>
   <div class="amt" id="celAmt"></div>
   <div class="nm" id="celNm"></div>
+  <div class="bless" id="celBless">Tuhan Yesus Memberkati &#128591;</div>
 </div>
 </div>
 <script>
@@ -805,7 +807,7 @@ function render(){
   const items = data.length
     ? data.map(d=>'<span class="it">'+esc(d.nama)+' - '+rp(d.nominal)+(isKom(d)?' (komitmen)':'')+'</span><span class="sep">&#9679;</span>').join('')
     : '<span class="it">Belum ada transaksi.</span>';
-  const head = '<b>TERIMA KASIH ATAS DUKUNGAN ANDA &#9679; </b>';
+  const head = '<b>TERIMA KASIH ATAS DUKUNGAN ANDA - TUHAN YESUS MEMBERKATI &#9679; </b>';
   $('rtTrack').innerHTML = head + items + head + items;
   if($('pjTrack')) $('pjTrack').innerHTML = head + items + head + items;
   document.querySelectorAll('.x').forEach(b=>b.onclick=async ()=>{
@@ -882,9 +884,17 @@ function setProj(on){
     if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
   }
 }
-$('bProj').onclick=()=>{setProj(true);render();}; $('bExit').onclick=()=>{setProj(false);render();};
-if($('pjExit')) $('pjExit').onclick=()=>{setProj(false);render();};
-document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement){ document.body.classList.remove('proj'); render(); } });
+$('bProj').onclick=()=>{ if(!askPass('MODE PROYEKTOR')) return; setProj(true);render(); };
+$('bExit').onclick=()=>{ if(!askPass('KELUAR MODE PROYEKTOR')) return; setProj(false);render(); };
+if($('pjExit')) $('pjExit').onclick=()=>{ if(!askPass('KELUAR MODE PROYEKTOR')) return; setProj(false);render(); };
+document.addEventListener('fullscreenchange',()=>{
+  // Esc/F11 hanya keluar dari fullscreen OS. Mode proyektor TETAP aktif (memenuhi layar).
+  // Satu-satunya cara keluar mode proyektor adalah tombol Keluar yang berpassword.
+  if(!document.fullscreenElement && document.body.classList.contains('proj')){
+    var b=$('pjExit'); // sekadar pastikan tombol keluar terlihat
+    if(b) b.style.opacity='1';
+  }
+});
 $('bGoal').onclick=()=>{
   const now=Number(localStorage.getItem(GKEY)||0);
   const p=prompt('Target dana (angka polos, isi 0 untuk menyembunyikan):', now||'');
@@ -901,9 +911,9 @@ function tSave(s){ localStorage.setItem(TKEY, JSON.stringify(s)); }
 function tElapsed(s){ return s.acc + (s.run && s.start ? Date.now()-s.start : 0); }
 function tFmt(ms){ let t=Math.floor(ms/1000); const h=Math.floor(t/3600),m=Math.floor(t%3600/60),d=t%60; const z=n=>(n<10?'0':'')+n; return z(h)+':'+z(m)+':'+z(d); }
 function tRender(){ const s=tLoad(); const el=tFmt(tElapsed(s)); const box=$('timerBox'); if($('tVal')) $('tVal').textContent=el; if(box) box.classList.toggle('run', !!s.run); if($('pjTVal')) $('pjTVal').textContent=el; const pb=$('pjTimerBox'); if(pb) pb.classList.toggle('run', !!s.run); }
-$('tStart') && ($('tStart').onclick=()=>{ let s=tLoad(); if(!s.run){ s.start=Date.now(); s.run=true; tSave(s); } tRender(); });
+$('tStart') && ($('tStart').onclick=()=>{ if(!askPass('MULAI ACARA')) return; let s=tLoad(); if(!s.run){ s.start=Date.now(); s.run=true; tSave(s); } tRender(); });
 $('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
-$('tReset') && ($('tReset').onclick=()=>{ if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
+$('tReset') && ($('tReset').onclick=()=>{ if(!askPass('RESET WAKTU')) return; if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
 setInterval(tRender, 1000); tRender();
 /* ================= PWA: INSTALL & SERVICE WORKER ================= */
 let deferredPrompt=null;
@@ -926,8 +936,10 @@ if('serviceWorker' in navigator){
 /* ================= ANIMASI DONASI BARU (mode proyektor) ================= */
 let knownIds=null;               // null = belum load pertama
 let celQueue=[], celBusy=false;
-function celKind(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('komitmen')>=0) return isKom(d)?'KOMITMEN (BELUM DITERIMA)':'KOMITMEN (SUDAH DITERIMA)'; return d.sumber==='QRIS/Online'?'QRIS / ONLINE' : d.sumber==='Transfer/Tunai'?'TRANSFER / TUNAI' : 'CASH'; }
+let celHistory=[], celIdx=-1, celNavList=null, celManualTimer=null;
+function celKind(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('komitmen')>=0) return isKom(d)?'KOMITMEN (DANA BELUM DITERIMA)':'KOMITMEN (DANA SUDAH DITERIMA)'; return d.sumber==='QRIS/Online'?'QRIS' : d.sumber==='Transfer/Tunai'?'TRANSFER' : 'CASH'; }
 function celColor(d){ return isKom(d)?'var(--gold)' : d.sumber==='QRIS/Online'?'var(--qris)' : d.sumber==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
+function celFitName(d){ var el=$('celNm'); if(!el) return; var L=String(d&&d.nama||'').length; el.style.fontSize = L>26?'1.9vh' : L>20?'2.3vh' : L>14?'2.7vh' : '3vh'; }
 function detectNew(){
   if(knownIds===null){ knownIds=new Set(data.map(d=>d.id)); return; }  // load pertama: catat saja, jangan animasi
   data.forEach(d=>{ if(!knownIds.has(d.id)){ knownIds.add(d.id); if(document.body.classList.contains('proj')) celQueue.push(d); } });
@@ -938,15 +950,83 @@ function celNext(){
   if(!celQueue.length){ celBusy=false; return; }
   celBusy=true;
   const d=celQueue.shift(), col=celColor(d);
+  celHistory.push(d);
   const via=$('celVia'); via.textContent=celKind(d);
   via.style.color=col; via.style.background='rgba(148,163,184,.12)'; via.style.border='2px solid '+col;
   $('celAmt').textContent=rp(d.nominal);
-  $('celNm').innerHTML = 'dari <b>'+esc(d.nama)+'</b> — '+(isKom(d)?'komitmen dukungan':'terima kasih!')+' &#128591;';
+  $('celNm').innerHTML = 'dari <b>'+esc(d.nama)+'</b> — '+(isKom(d)?'komitmen dukungan':'terima kasih!');
+  celFitName(d);
   box.classList.remove('hide'); box.classList.add('show');
   setTimeout(()=>{ box.classList.remove('show'); box.classList.add('hide');
     setTimeout(()=>{ box.classList.remove('hide'); celNext(); }, 500);
   }, 6000);
 }
+/* ====== PUTAR ULANG POP-UP DONASI (untuk MC yang terlewat) ====== */
+function celDisplay(d){
+  const box=$('celebrate'); if(!box||!d) return;
+  const col=celColor(d);
+  const via=$('celVia'); via.textContent=celKind(d);
+  via.style.color=col; via.style.background='rgba(148,163,184,.12)'; via.style.border='2px solid '+col;
+  $('celAmt').textContent=rp(d.nominal);
+  $('celNm').innerHTML='dari <b>'+esc(d.nama)+'</b> — '+(isKom(d)?'komitmen dukungan':'terima kasih!');
+  celFitName(d);
+  box.classList.remove('hide'); box.classList.add('show');
+  clearTimeout(celManualTimer);
+  celManualTimer=setTimeout(()=>{ box.classList.remove('show'); box.classList.add('hide');
+    setTimeout(()=>box.classList.remove('hide'),500); }, 8000);
+}
+function celReplay(step){
+  if(!document.body.classList.contains('proj')) return;
+  if(celIdx<0 || !celNavList){
+    celNavList = celHistory.length ? celHistory.slice() : data.slice(-15);
+    celIdx = celNavList.length-1;
+  } else {
+    celIdx = Math.max(0, Math.min(celNavList.length-1, celIdx+step));
+  }
+  if(!celNavList.length) return;
+  celDisplay(celNavList[celIdx]);
+}
+function celClose(){
+  const box=$('celebrate'); if(box){ box.classList.remove('show'); box.classList.add('hide');
+    setTimeout(()=>box.classList.remove('hide'),500); }
+  celIdx=-1; celNavList=null;
+}
+document.addEventListener('keydown',function(e){
+  if(!document.body.classList.contains('proj')) return;
+  if(e.key==='r'||e.key==='R'){ e.preventDefault(); celReplay(0); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); celReplay(-1); }
+  else if(e.key==='ArrowRight'){ e.preventDefault(); celReplay(1); }
+  else if(e.key==='Escape'){ celClose(); }
+});
+(function(){
+  const b=document.createElement('button');
+  b.id='celReplayBtn'; b.type='button'; b.textContent='\u21BB Ulang Pop-up';
+  b.style.cssText='position:absolute;left:1.6vw;top:1.6vh;z-index:20;padding:.5vh .9vw;'+
+    'background:rgba(11,18,32,.65);color:#e2e8f0;border:1px solid rgba(148,163,184,.25);'+
+    'border-radius:8px;font-size:1.15vh;font-weight:700;letter-spacing:.3px;cursor:pointer;'+
+    'opacity:0;transition:opacity .35s ease;pointer-events:none';
+  // tempel di dalam kotak "Total Dana Diterima" (.pjBig)
+  const host=document.querySelector('#projScreen .pjBig') || document.body;
+  host.appendChild(b);
+  b.onclick=()=>celReplay(0);
+
+  let hideTimer=null;
+  function showBtn(){
+    if(!document.body.classList.contains('proj')) return;
+    b.style.opacity='.35'; b.style.pointerEvents='auto';
+    clearTimeout(hideTimer);
+    hideTimer=setTimeout(()=>{ b.style.opacity='0'; b.style.pointerEvents='none'; }, 2500);
+  }
+  b.onmouseenter=()=>{ b.style.opacity='1'; clearTimeout(hideTimer); };
+  b.onmouseleave=()=>{ showBtn(); };
+  document.addEventListener('mousemove',showBtn);
+
+  const upd=()=>{
+    if(!document.body.classList.contains('proj')){ b.style.opacity='0'; b.style.pointerEvents='none'; }
+  };
+  new MutationObserver(upd).observe(document.body,{attributes:true,attributeFilter:['class']});
+  upd();
+})();
 /* ================= INIT ================= */
 (function init(){
   const now=new Date();
