@@ -57,6 +57,9 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   const url = new URL(req.url);
 
+  // Abaikan request non-http (chrome-extension, data:, dll) — tidak bisa di-cache
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
   // 1) Data Google Apps Script -> SELALU jaringan (tidak pernah di-cache)
   const isApi = url.hostname.includes('script.google.com') ||
                 url.hostname.includes('googleusercontent.com');
