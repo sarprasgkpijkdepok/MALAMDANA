@@ -774,7 +774,11 @@ function render(){
   $('kQ').textContent=rp(sQ);   $('kQN').textContent=tQ.length+' transaksi';
   $('kT').textContent=rp(sT);   $('kTN').textContent=tT.length+' transaksi';
   $('kC').textContent=rp(sCashPure); $('kCN').textContent=cashPure.length+' transaksi';
-  $('kKS').textContent=rp(sKomSudah); $('kKSN').textContent='Total Komitmen (Dana Belum Diterima): '+rp(sKom);
+    $('kKS').textContent=rp(sKomSudah); $('kKSN').innerHTML=komSudah.length+' transaksi'+
+    '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">'+
+    '<span style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mut)">Total Komitmen (Dana Belum Diterima)</span><br>'+
+    '<b style="font-size:20px;color:var(--gold)">'+rp(sKom)+'</b><br>'+
+    '<span style="color:var(--mut)">'+kom.length+' transaksi</span></div>';
   $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
   if($('pjVal')){ $('pjVal').textContent=rp(sTerima); $('pjPotensi').textContent=rp(sA); $('pjKom').textContent=rp(sKom); }
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
