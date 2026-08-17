@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;
 --qris:#38bdf8;--trf:#34d399;--gold:#fbbf24;--red:#f87171;--cash:#c084fc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:12px}
-.wrap{max-width:1120px;margin:0 auto}
+.wrap{max-width:1400px;margin:0 auto}
 header{background:linear-gradient(135deg,#1e3a8a,#0f766e);border-radius:14px;padding:14px 20px;margin-bottom:12px;
 display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:nowrap}
 header img{height:66px;width:auto;max-width:96px;flex:none;object-fit:contain}
@@ -32,7 +35,7 @@ background:var(--card);color:var(--mut);font-size:13px;font-weight:600;cursor:po
 .split{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:9px;font-size:12px;color:var(--mut)}
 .split b{font-weight:700}.sd b{color:var(--trf)}.sk b{color:var(--gold)}
 .sk::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--gold);margin-right:5px}
-.b-tot{border-left:5px solid var(--gold)}.b-q{border-left:5px solid var(--qris)}.b-t{border-left:5px solid var(--trf)}.b-c{border-left:5px solid var(--cash)}
+.b-tot{border-left:5px solid var(--gold)}.b-q{border-left:5px solid var(--qris)}.b-t{border-left:5px solid var(--trf)}.b-c{border-left:5px solid var(--cash)}.b-ks{border-left:5px solid var(--gold)}
 .bar{height:14px;background:#0b1220;border-radius:7px;overflow:hidden;display:flex;margin-top:10px}
 .bar i{display:block;height:100%}
 h2{font-size:15px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
@@ -51,6 +54,7 @@ tfoot td{font-weight:700;color:var(--gold);border-top:2px solid var(--line)}
 .tag{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .tq{background:rgba(56,189,248,.18);color:var(--qris)}.tt{background:rgba(52,211,153,.18);color:var(--trf)}
 .tc{background:rgba(192,132,252,.18);color:var(--cash)}.tk{background:rgba(251,191,36,.18);color:var(--gold)}.tr{background:rgba(52,211,153,.18);color:var(--trf)}
+.trd{background:rgba(52,211,153,.18);color:var(--trf);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}
 .msg{padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;display:none}
 .ok{background:rgba(52,211,153,.15);color:var(--trf);border:1px solid var(--trf)}
@@ -289,7 +293,9 @@ body.proj #pjExit:hover{opacity:1}
     </div>
     <div class="card b-q"><div class="lbl">Total QRIS</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
     <div class="card b-t"><div class="lbl">Total Transfer</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
-    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen (Dana Belum Diterima): Rp 0</div></div>
+    <div class="card b-c"><div class="lbl">Total Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">0 transaksi</div></div>
+    <div class="card b-ks"><div class="lbl">Total Komitmen (Dana Sudah Diterima)</div><div class="val" id="kKS">Rp 0</div><div class="sub" id="kKSN">Total Komitmen (Dana Belum Diterima): Rp 0</div></div>
+
   </div>
   <div class="card cRekap">
     <h2>Rekap per Sumber</h2>
@@ -312,6 +318,7 @@ body.proj #pjExit:hover{opacity:1}
           <circle id="dnQ" cx="70" cy="70" r="54" fill="none" stroke="var(--qris)" stroke-width="18" stroke-dasharray="0 999" transform="rotate(-90 70 70)"></circle>
           <circle id="dnT" cx="70" cy="70" r="54" fill="none" stroke="var(--trf)" stroke-width="18" stroke-dasharray="0 999" transform="rotate(-90 70 70)"></circle>
           <circle id="dnC" cx="70" cy="70" r="54" fill="none" stroke="var(--cash)" stroke-width="18" stroke-dasharray="0 999" transform="rotate(-90 70 70)"></circle>
+          <circle id="dnKS" cx="70" cy="70" r="54" fill="none" stroke="var(--gold)" stroke-width="18" stroke-dasharray="0 999" transform="rotate(-90 70 70)"></circle>
           <text id="dnMid" x="70" y="70" class="dnv">0</text>
           <text x="70" y="86" class="dnk">RUPIAH</text>
         </svg>
@@ -645,22 +652,26 @@ function rowsInput(list,tbId,totId){
   $(totId).textContent=num(sum(list));
 }
 function isKom(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('sudah')>=0) return false; return k.indexOf('komitmen')>=0||k.indexOf('belum')>=0; }
+function isKomSudah(d){ var k=String(d.ket||'').toLowerCase(); return k.indexOf('komitmen')>=0 && k.indexOf('sudah')>=0; }
 function tagOf(s){ return s==='QRIS/Online'?'tq' : s==='Transfer/Tunai'?'tt' : 'tc'; }
 function colOf(s){ return s==='QRIS/Online'?'var(--qris)' : s==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
-function donut(sQ,sT,sCash,sTerima,sKom){
+function donut(sQ,sT,sCashPure,sKomSudah,sTerima,sKom){
   const R=54, C=2*Math.PI*R;
-  const fQ=sTerima?sQ/sTerima:0, fT=sTerima?sT/sTerima:0, fC=sTerima?sCash/sTerima:0;
+  const fQ=sTerima?sQ/sTerima:0, fT=sTerima?sT/sTerima:0, fC=sTerima?sCashPure/sTerima:0, fKS=sTerima?sKomSudah/sTerima:0;
   const pc=f=>(f*100).toFixed(1).replace('.',',');
   $('dnQ').setAttribute('stroke-dasharray',(C*fQ)+' '+C);
   $('dnT').setAttribute('stroke-dasharray',(C*fT)+' '+C);
   $('dnT').setAttribute('stroke-dashoffset',(-C*fQ));
   $('dnC').setAttribute('stroke-dasharray',(C*fC)+' '+C);
   $('dnC').setAttribute('stroke-dashoffset',(-C*(fQ+fT)));
+  $('dnKS').setAttribute('stroke-dasharray',(C*fKS)+' '+C);
+  $('dnKS').setAttribute('stroke-dashoffset',(-C*(fQ+fT+fC)));
   $('dnMid').textContent = num(sTerima);
   $('dnLg').innerHTML =
     '<div class="lgi"><i style="background:var(--qris)"></i>QRIS / Online <b>'+pc(fQ)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--trf)"></i>Transfer / Tunai <b>'+pc(fT)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--cash)"></i>Cash (diterima) <b>'+pc(fC)+'%</b></div>'+
+    '<div class="lgi"><i style="background:var(--gold)"></i>Komitmen (Dana Sudah Diterima) <b>'+pc(fKS)+'%</b></div>'+
     (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (Dana Belum Diterima) <b>'+rp(sKom)+'</b></div>':'');
 }
 function bars(list){
@@ -752,19 +763,22 @@ function render(){
   const tC=data.filter(d=>d.sumber==='Cash/Komitmen');
   tQ.forEach((d,i)=>d._n=i+1); tT.forEach((d,i)=>d._n=i+1); tC.forEach((d,i)=>d._n=i+1);
   const kom=tC.filter(d=>isKom(d)), cash=tC.filter(d=>!isKom(d));
+  const komSudah=tC.filter(d=>isKomSudah(d)), cashPure=cash.filter(d=>!isKomSudah(d));
   const dataTerima=data.filter(d=>!isKom(d));   // transaksi yang uangnya sudah masuk
   const sQ=sum(tQ), sT=sum(tT), sC=sum(tC), sKom=sum(kom), sCash=sum(cash);
+  const sCashPure=sum(cashPure), sKomSudah=sum(komSudah);
   const sA=sQ+sT+sC, sTerima=sQ+sT+sCash;
   $('kTot').textContent=rp(sTerima); $('kTotN').textContent=(tQ.length+tT.length+cash.length)+' transaksi diterima';
   $('kQ').textContent=rp(sQ);   $('kQN').textContent=tQ.length+' transaksi';
   $('kT').textContent=rp(sT);   $('kTN').textContent=tT.length+' transaksi';
-  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen (Dana Belum Diterima): '+rp(sKom);
+  $('kC').textContent=rp(sCashPure); $('kCN').textContent=cashPure.length+' transaksi';
+  $('kKS').textContent=rp(sKomSudah); $('kKSN').textContent='Total Komitmen (Dana Belum Diterima): '+rp(sKom);
   $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
   if($('pjVal')){ $('pjVal').textContent=rp(sTerima); $('pjPotensi').textContent=rp(sA); $('pjKom').textContent=rp(sKom); }
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
   $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
   $('barC').style.width=(sTerima?sCash/sTerima*100:33)+'%';
-  donut(sQ,sT,sCash,sTerima,sKom);
+  donut(sQ,sT,sCashPure,sKomSudah,sTerima,sKom);
   bars(dataTerima);
   trend(dataTerima);
   goal(sTerima);
@@ -772,7 +786,8 @@ function render(){
   $('tbRekap').innerHTML=
     '<tr><td><span class="tag tq">QRIS/Online</span></td><td class="num">'+num(sQ)+'</td><td class="num">'+tQ.length+'</td><td class="num">'+pc(sQ)+'</td></tr>'+
     '<tr><td><span class="tag tt">Transfer/Tunai</span></td><td class="num">'+num(sT)+'</td><td class="num">'+tT.length+'</td><td class="num">'+pc(sT)+'</td></tr>'+
-    '<tr><td><span class="tag tc">Cash (diterima)</span></td><td class="num">'+num(sCash)+'</td><td class="num">'+cash.length+'</td><td class="num">'+pc(sCash)+'</td></tr>'+
+    '<tr><td><span class="tag tc">Cash (diterima)</span></td><td class="num">'+num(sCashPure)+'</td><td class="num">'+cashPure.length+'</td><td class="num">'+pc(sCashPure)+'</td></tr>'+
+    '<tr><td><span class="tag tk">Komitmen (Dana Sudah Diterima)</span></td><td class="num">'+num(sKomSudah)+'</td><td class="num">'+komSudah.length+'</td><td class="num">'+pc(sKomSudah)+'</td></tr>'+
     '<tr style="font-weight:700;color:var(--gold)"><td>TOTAL DITERIMA</td><td class="num">'+num(sTerima)+'</td><td class="num">'+(tQ.length+tT.length+cash.length)+'</td><td class="num">100,0%</td></tr>'+
     '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (Dana Belum Diterima)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
   rowsInput(tQ,'tbQ','fQTot');
@@ -783,7 +798,7 @@ function render(){
     '<td><span class="tag '+tagOf(d.sumber)+'">'+esc(d.sumber)+'</span></td>'+
     '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
     '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
-    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag tr">Diterima</span>')+'</td></tr>').join('')
+    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag trd">Diterima</span>')+'</td></tr>').join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
   $('fHTot').textContent=num(sA);
   $('fHTerima').textContent=num(sTerima); $('fHKom').textContent=num(sKom);
@@ -890,6 +905,24 @@ $('tStart') && ($('tStart').onclick=()=>{ let s=tLoad(); if(!s.run){ s.start=Dat
 $('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
 $('tReset') && ($('tReset').onclick=()=>{ if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
 setInterval(tRender, 1000); tRender();
+/* ================= PWA: INSTALL & SERVICE WORKER ================= */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  const b=$('bInstall'); if(b) b.style.display='inline-block';
+});
+$('bInstall') && ($('bInstall').onclick=async ()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  try{ await deferredPrompt.userChoice; }catch(e){}
+  deferredPrompt=null;
+  const b=$('bInstall'); if(b) b.style.display='none';
+});
+window.addEventListener('appinstalled',()=>{ deferredPrompt=null; const b=$('bInstall'); if(b) b.style.display='none'; });
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
 /* ================= ANIMASI DONASI BARU (mode proyektor) ================= */
 let knownIds=null;               // null = belum load pertama
 let celQueue=[], celBusy=false;
