@@ -2,29 +2,19 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK</title>
-<!-- ===== PWA (bisa di-install ke HP / laptop) ===== -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0f766e">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Rekap Dana">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;
 --qris:#38bdf8;--trf:#34d399;--gold:#fbbf24;--red:#f87171;--cash:#c084fc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:12px}
-.wrap{max-width:1600px;margin:0 auto}
-header{background:linear-gradient(135deg,#1e3a8a,#0f766e);border-radius:14px;padding:14px;margin-bottom:12px;
-display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
-header img{width:62px;height:62px;border-radius:50%;background:#fff;padding:4px;flex:none}
+.wrap{max-width:1120px;margin:0 auto}
+header{background:linear-gradient(135deg,#1e3a8a,#0f766e);border-radius:14px;padding:14px 20px;margin-bottom:12px;
+display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:nowrap}
+header img{height:66px;width:auto;max-width:96px;flex:none;object-fit:contain}
 .ht{text-align:center}
+.ht .timer{margin:8px auto 0}
 header h1{margin:0;font-size:19px;letter-spacing:.5px}
 header p{margin:6px 0 0;font-size:12px;color:#cbd5e1}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
@@ -58,9 +48,9 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
 th{background:#0b1220;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0}
 td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
 tfoot td{font-weight:700;color:var(--gold);border-top:2px solid var(--line)}
-.tag{display:inline-block;white-space:nowrap;line-height:1.4;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.tag{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .tq{background:rgba(56,189,248,.18);color:var(--qris)}.tt{background:rgba(52,211,153,.18);color:var(--trf)}
-.tc{background:rgba(192,132,252,.18);color:var(--cash)}.tk{background:rgba(251,191,36,.18);color:var(--gold)}.trc{background:rgba(52,211,153,.18);color:var(--trf)}
+.tc{background:rgba(192,132,252,.18);color:var(--cash)}.tk{background:rgba(251,191,36,.18);color:var(--gold)}.tr{background:rgba(52,211,153,.18);color:var(--trf)}
 .scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}
 .msg{padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;display:none}
 .ok{background:rgba(52,211,153,.15);color:var(--trf);border:1px solid var(--trf)}
@@ -189,6 +179,63 @@ body.proj .rt{grid-column:1 / -1;grid-row:4;padding:1vh 0}
 body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
 @media(max-height:620px){body.proj .cTren{display:none}}
 @media(max-width:640px){.card .val{font-size:21px}th,td{padding:7px 5px;font-size:12px}header img{width:48px;height:48px}}
+/* ============ MODE PROYEKTOR BARU (fokus 3 angka + 2 logo) ============ */
+body.proj header,body.proj .tabs,body.proj .pane,body.proj footer{display:none!important}
+body.proj{padding:0;overflow:hidden}
+body.proj .wrap{max-width:100%!important;height:100vh!important;padding:0!important;margin:0!important;overflow:hidden!important}
+#projScreen{display:none}
+body.proj #projScreen{display:flex;flex-direction:column;height:100vh;padding:0 2vw 1.4vh;overflow:hidden}
+.pjHead{background:linear-gradient(135deg,#1e3a8a,#0f766e);border-radius:0 0 18px 18px;
+padding:1.4vh 3vw;margin-bottom:1.4vh;display:flex;align-items:center;justify-content:space-between;gap:2vw;flex:none}
+.pjHead img{height:11vh;width:auto;max-width:20vw;flex:none;object-fit:contain}
+.pjHt{text-align:center;flex:1;min-width:0}
+.pjHt h1{margin:0;font-size:4.2vh;letter-spacing:.5px;line-height:1.05}
+.pjTema{margin:.9vh 0 0;font-size:2.6vh;font-style:italic;color:#fde68a;letter-spacing:1px;font-weight:600}
+.pjTema::before,.pjTema::after{content:"\2726";color:var(--gold);margin:0 1vw;font-style:normal;font-size:1.9vh;vertical-align:middle}
+.pjMain{flex:1;display:flex;flex-direction:column;min-height:0;gap:1.6vh}
+.pjBig{flex:1;min-height:0;background:linear-gradient(160deg,#134e4a,#0b3b39 60%,#0b1220);
+border:3px solid var(--gold);border-radius:22px;padding:2.6vh 3vw;position:relative;overflow:hidden;
+display:flex;flex-direction:column;justify-content:center}
+.pjBig::after{content:"";position:absolute;right:-6vw;top:-8vw;width:34vw;height:34vw;border-radius:50%;
+background:radial-gradient(circle,rgba(251,191,36,.16),transparent 70%)}
+.pjBig::before{content:"";position:absolute;left:-8vw;bottom:-10vw;width:30vw;height:30vw;border-radius:50%;
+background:radial-gradient(circle,rgba(52,211,153,.12),transparent 70%)}
+.pjTimer{display:flex;align-items:center;gap:.8vw;background:rgba(11,18,32,.45);border:1px solid rgba(251,191,36,.45);
+border-radius:12px;padding:.8vh 1.2vw;position:absolute;right:1.6vw;top:1.6vh;z-index:2}
+.pjTimer .dot{width:1vh;height:1vh;border-radius:50%;background:var(--mut)}
+.pjTimer.run .dot{background:var(--trf);box-shadow:0 0 8px var(--trf);animation:tp 1.2s ease-in-out infinite}
+.pjTimer .tv{font-size:2.6vh;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:#fff;line-height:1}
+.pjTimer .tl{font-size:1.1vh;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700}
+.pjLbl{font-size:2.8vh;letter-spacing:4px;color:var(--gold);font-weight:700;text-transform:uppercase;text-align:center}
+.pjVal{font-size:12vh;line-height:1;font-weight:800;letter-spacing:-2px;text-align:center;margin:1vh 0 0;
+color:#fff;text-shadow:0 4px 30px rgba(251,191,36,.25);white-space:nowrap}
+.pjSplit{display:flex;gap:2vw;margin-top:2.4vh}
+.pjBox{flex:1;border-radius:16px;padding:2vh 2vw;text-align:center}
+.pjBox .l{font-size:2.1vh;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.pjBox .v{font-size:5.2vh;font-weight:800;line-height:1;margin-top:.8vh;white-space:nowrap}
+.pjSd{background:rgba(52,211,153,.12);border:2px solid var(--trf)}
+.pjSd .l{color:var(--trf)} .pjSd .v{color:#fff}
+.pjSk{background:rgba(251,191,36,.10);border:2px dashed var(--gold)}
+.pjSk .l{color:var(--gold)} .pjSk .v{color:var(--gold)}
+.pjGoal{flex:none;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2vh 3vw}
+.pjGoal .grow{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:1vw;margin-bottom:1.2vh}
+.pjGoal .gt{font-size:2.6vh;color:var(--txt);font-weight:700}
+.pjGoal .gt b{color:var(--gold);font-size:3.2vh}
+.pjGoal .gsisa{font-size:2.4vh;color:var(--trf);font-weight:700}
+.pjGbar{height:4.4vh;background:#0b1220;border-radius:2.2vh;overflow:hidden;position:relative;border:1px solid var(--line)}
+.pjGbar i{display:block;height:100%;width:0;border-radius:2.2vh;transition:width 1s ease;
+background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
+.pjGbar .gpc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+font-size:2.6vh;font-weight:800;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.pjRt{flex:none;background:linear-gradient(90deg,#0b1220,#132038,#0b1220);border:1px solid var(--line);
+border-radius:12px;padding:1.4vh 0;overflow:hidden;position:relative;margin-top:.4vh}
+.pjRt .track{display:inline-block;white-space:nowrap;padding-left:100%;animation:sc 55s linear infinite}
+.pjRt b{color:var(--gold);font-size:2.6vh}
+.pjRt span.it{color:var(--txt);font-size:2.6vh;margin:0 8px}
+.pjRt span.sep{color:var(--qris);margin:0 14px;font-weight:700;font-size:2.6vh}
+#pjExit{display:none}
+body.proj #pjExit{display:block;position:fixed;left:12px;top:12px;z-index:99;opacity:.2;padding:6px 12px}
+body.proj #pjExit:hover{opacity:1}
 @media print{
   @page{size:A3 landscape;margin:10mm}
   html,body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
@@ -215,12 +262,13 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
 <body>
 <div class="wrap">
 <header>
-  <img id="logo" alt="Logo GKPI JK Depok">
+  <img id="hdrPanitia" alt="Logo Panitia Pembangunan">
   <div class="ht">
     <h1>REKAPITULASI DANA MASUK</h1>
     <p>KONSER PENGGALANGAN DANA — GKPI JK DEPOK</p>
+    <div class="timer" id="timerBox"><span class="dot" id="tDot"></span><div><div class="tl">Durasi Acara</div><div class="tv" id="tVal">00:00:00</div></div></div>
   </div>
-  <div class="timer" id="timerBox"><span class="dot" id="tDot"></span><div><div class="tl">Durasi Acara</div><div class="tv" id="tVal">00:00:00</div></div></div>
+  <img id="hdrGKPI" alt="Logo GKPI Depok">
 </header>
 <div class="tabs">
   <button class="on" data-p="pDash">Dashboard</button>
@@ -237,11 +285,11 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
       <div class="sub" id="kTotN">0 transaksi diterima</div>
       <div class="bar"><i id="barQ" style="background:var(--qris)"></i><i id="barT" style="background:var(--trf)"></i><i id="barC" style="background:var(--cash)"></i></div>
-      <div class="split"><span class="sk">Komitmen (belum diterima): <b id="kKom">Rp 0</b></span><span class="sd">Total Potensi Terkumpul: <b id="kTerima">Rp 0</b></span></div>
+      <div class="split"><span class="sk">Komitmen (Dana Belum Diterima): <b id="kKom">Rp 0</b></span><span class="sd">Total Potensi Terkumpul: <b id="kTerima">Rp 0</b></span></div>
     </div>
-    <div class="card b-q"><div class="lbl">Total QRIS / Online</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
-    <div class="card b-t"><div class="lbl">Total Transfer / Tunai</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
-    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen belum diterima: Rp 0</div></div>
+    <div class="card b-q"><div class="lbl">Total QRIS</div><div class="val" id="kQ">Rp 0</div><div class="sub" id="kQN">0 transaksi</div></div>
+    <div class="card b-t"><div class="lbl">Total Transfer</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
+    <div class="card b-c"><div class="lbl">Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">Komitmen (Dana Belum Diterima): Rp 0</div></div>
   </div>
   <div class="card cRekap">
     <h2>Rekap per Sumber</h2>
@@ -350,7 +398,7 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
       <div><label for="tTgl">Tanggal</label><input type="date" id="tTgl" required></div>
       <div><label for="tWkt">Waktu</label><input type="time" id="tWkt" required></div>
       <div><label for="tNama">Nama Pemberi / Sumber</label><input type="text" id="tNama" placeholder="cth. Orang 1" required></div>
-      <div><label for="tKet">Keterangan</label><select id="tKet"><option>Transfer</option><option>Tunai</option><option>Lainnya</option></select></div>
+      <div><label for="tKet">Keterangan</label><select id="tKet"><option>Transfer</option><option>Lainnya</option></select></div>
       <div><label for="tNom">Nominal (Rp)</label><input type="number" id="tNom" min="1" step="any" inputmode="numeric" placeholder="2000000" required></div>
       <div><label for="tPtg">Diinput oleh</label><input type="text" id="tPtg" value="Petugas Transfer" required></div>
       <div class="full"><button type="submit" class="p" id="btnT">+ Simpan Transaksi Transfer</button>
@@ -378,14 +426,14 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
   <div id="ctC" style="display:none">
   <div class="card">
     <h2>INPUT DANA MASUK — CASH / KOMITMEN</h2>
-    <p class="note">Petugas: Cash. Isi setiap baris untuk 1 transaksi. Pilih <b>Komitmen</b> bila dana BELUM diterima (masih janji).</p>
+    <p class="note">Petugas: Cash. Isi setiap baris untuk 1 transaksi. Pilih <b>Komitmen (Dana Belum Diterima)</b> bila dana BELUM diterima (masih janji). Pilih <b>Komitmen (Dana Sudah Diterima)</b> bila dana SUDAH diterima</p>
     <div class="msg ok" id="mOkC"></div>
     <div class="msg err" id="mErrC"></div>
     <form id="fC" autocomplete="off">
       <div><label for="cTgl">Tanggal</label><input type="date" id="cTgl" required></div>
       <div><label for="cWkt">Waktu</label><input type="time" id="cWkt" required></div>
       <div><label for="cNama">Nama Pemberi / Sumber</label><input type="text" id="cNama" placeholder="cth. Orang 1" required></div>
-      <div><label for="cKet">Keterangan</label><select id="cKet"><option>Cash</option><option>Komitmen</option><option>Lainnya</option></select></div>
+      <div><label for="cKet">Keterangan</label><select id="cKet"><option>Cash</option><option>Komitmen (Dana Belum Diterima)</option><option>Komitmen (Dana Sudah Diterima)</option></select></div>
       <div><label for="cNom">Nominal (Rp)</label><input type="number" id="cNom" min="1" step="any" inputmode="numeric" placeholder="5000000" required></div>
       <div><label for="cPtg">Diinput oleh</label><input type="text" id="cPtg" value="Petugas Cash" required></div>
       <div class="full"><button type="submit" class="p" id="btnC">+ Simpan Cash / Komitmen</button>
@@ -429,6 +477,33 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
   </div>
   </div>
 </div>
+<div id="projScreen">
+  <div class="pjHead">
+    <img id="pjLogoPanitia" alt="Logo Panitia Pembangunan">
+    <div class="pjHt">
+      <h1>Malam Pujian dan Konser Penggalangan Dana</h1>
+      <div class="pjTema">Light the Next Generation</div>
+    </div>
+    <img id="pjLogoGKPI" alt="Logo GKPI Depok">
+  </div>
+  <div class="pjMain">
+    <div class="pjBig">
+      <div class="pjTimer" id="pjTimerBox"><span class="dot"></span><div><div class="tl">Durasi Acara</div><div class="tv" id="pjTVal">00:00:00</div></div></div>
+      <div class="pjLbl">Total Dana Diterima</div>
+      <div class="pjVal" id="pjVal">Rp 0</div>
+      <div class="pjSplit">
+        <div class="pjBox pjSd"><div class="l">Total Potensi Dana Terkumpul</div><div class="v" id="pjPotensi">Rp 0</div></div>
+        <div class="pjBox pjSk"><div class="l">KOMITMEN (DANA BELUM DITERIMA)</div><div class="v" id="pjKom">Rp 0</div></div>
+      </div>
+    </div>
+    <div class="pjGoal" id="pjGoalBox" style="display:none">
+      <div class="grow"><span class="gt">&#127919; Target: <b id="pjTarget">Rp 0</b></span><span class="gsisa" id="pjSisa"></span></div>
+      <div class="pjGbar"><i id="pjFill"></i><div class="gpc" id="pjPc"></div></div>
+    </div>
+    <div class="pjRt"><div class="track" id="pjTrack"></div></div>
+  </div>
+</div>
+<button type="button" class="s" id="pjExit" title="Keluar mode proyektor">&#10006; Keluar</button>
 <footer>Data tersimpan terpusat di Google Sheet. Semua perangkat yang membuka dashboard ini melihat data yang sama.</footer>
 <div id="celebrate">
   <div class="ic">&#127881;</div>
@@ -440,41 +515,11 @@ body.proj .rt b,body.proj .rt span.it{font-size:2.4vh}
 </div>
 <script>
 /* ====== LOGO (tertanam, tanpa file terpisah) ====== */
-const LOGO='data:image/png;base64,'
-+'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';
-document.getElementById('logo').src=LOGO;
+const LOGO='logo-gkpi.png';
+(function(){var l=document.getElementById('logo');if(l)l.src=LOGO;})();
+const LOGO_PANITIA='logo-panitia.png';
+const LOGO_GKPI='logo-gkpi.png';
+(function(){var ids=[['pjLogoPanitia',LOGO_PANITIA],['pjLogoGKPI',LOGO_GKPI],['hdrPanitia',LOGO_PANITIA],['hdrGKPI',LOGO_GKPI]];ids.forEach(function(p){var e=document.getElementById(p[0]);if(e)e.src=p[1];});})();
 
 /* ================= KONFIGURASI ================= */
 /* GANTI baris di bawah dengan URL Web App Google Apps Script Anda,
@@ -599,7 +644,7 @@ function rowsInput(list,tbId,totId){
     : '<tr><td colspan="7" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
   $(totId).textContent=num(sum(list));
 }
-function isKom(d){ return String(d.ket||'').toLowerCase().indexOf('komitmen')>=0; }
+function isKom(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('sudah')>=0) return false; return k.indexOf('komitmen')>=0||k.indexOf('belum')>=0; }
 function tagOf(s){ return s==='QRIS/Online'?'tq' : s==='Transfer/Tunai'?'tt' : 'tc'; }
 function colOf(s){ return s==='QRIS/Online'?'var(--qris)' : s==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
 function donut(sQ,sT,sCash,sTerima,sKom){
@@ -616,7 +661,7 @@ function donut(sQ,sT,sCash,sTerima,sKom){
     '<div class="lgi"><i style="background:var(--qris)"></i>QRIS / Online <b>'+pc(fQ)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--trf)"></i>Transfer / Tunai <b>'+pc(fT)+'%</b></div>'+
     '<div class="lgi"><i style="background:var(--cash)"></i>Cash (diterima) <b>'+pc(fC)+'%</b></div>'+
-    (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (belum diterima) <b>'+rp(sKom)+'</b></div>':'');
+    (sKom>0?'<div class="lgi" style="opacity:.6"><i style="background:var(--gold)"></i>Komitmen (Dana Belum Diterima) <b>'+rp(sKom)+'</b></div>':'');
 }
 function bars(list){
   const top=list.slice().sort((a,b)=>b.nominal-a.nominal).slice(0,5);
@@ -684,6 +729,16 @@ function trend(list){
 }
 function goal(sA){
   const g=Number(localStorage.getItem(GKEY)||0);
+  if($('pjGoalBox')){
+    if(g>0){
+      const pf=Math.min(sA/g,1);
+      $('pjGoalBox').style.display='block';
+      $('pjFill').style.width=(pf*100)+'%';
+      $('pjPc').textContent=(pf*100).toFixed(1).replace('.',',')+'% tercapai';
+      $('pjTarget').textContent=rp(g);
+      $('pjSisa').textContent = sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi';
+    } else { $('pjGoalBox').style.display='none'; }
+  }
   if(!(g>0)){ $('goalBox').style.display='none'; return; }
   $('goalBox').style.display='block';
   const f=Math.min(sA/g,1);
@@ -703,8 +758,9 @@ function render(){
   $('kTot').textContent=rp(sTerima); $('kTotN').textContent=(tQ.length+tT.length+cash.length)+' transaksi diterima';
   $('kQ').textContent=rp(sQ);   $('kQN').textContent=tQ.length+' transaksi';
   $('kT').textContent=rp(sT);   $('kTN').textContent=tT.length+' transaksi';
-  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen belum diterima: '+rp(sKom);
+  $('kC').textContent=rp(sCash); $('kCN').textContent='Komitmen (Dana Belum Diterima): '+rp(sKom);
   $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
+  if($('pjVal')){ $('pjVal').textContent=rp(sTerima); $('pjPotensi').textContent=rp(sA); $('pjKom').textContent=rp(sKom); }
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
   $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
   $('barC').style.width=(sTerima?sCash/sTerima*100:33)+'%';
@@ -718,7 +774,7 @@ function render(){
     '<tr><td><span class="tag tt">Transfer/Tunai</span></td><td class="num">'+num(sT)+'</td><td class="num">'+tT.length+'</td><td class="num">'+pc(sT)+'</td></tr>'+
     '<tr><td><span class="tag tc">Cash (diterima)</span></td><td class="num">'+num(sCash)+'</td><td class="num">'+cash.length+'</td><td class="num">'+pc(sCash)+'</td></tr>'+
     '<tr style="font-weight:700;color:var(--gold)"><td>TOTAL DITERIMA</td><td class="num">'+num(sTerima)+'</td><td class="num">'+(tQ.length+tT.length+cash.length)+'</td><td class="num">100,0%</td></tr>'+
-    '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (belum diterima)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
+    '<tr style="opacity:.65"><td><span class="tag tk">Komitmen (Dana Belum Diterima)</span></td><td class="num">'+num(sKom)+'</td><td class="num">'+kom.length+'</td><td class="num">—</td></tr>';
   rowsInput(tQ,'tbQ','fQTot');
   rowsInput(tT,'tbT','fTTot');
   rowsInput(tC,'tbC','fCTot');
@@ -727,7 +783,7 @@ function render(){
     '<td><span class="tag '+tagOf(d.sumber)+'">'+esc(d.sumber)+'</span></td>'+
     '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
     '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
-    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag trc">Diterima</span>')+'</td></tr>').join('')
+    '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag tr">Diterima</span>')+'</td></tr>').join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
   $('fHTot').textContent=num(sA);
   $('fHTerima').textContent=num(sTerima); $('fHKom').textContent=num(sKom);
@@ -736,6 +792,7 @@ function render(){
     : '<span class="it">Belum ada transaksi.</span>';
   const head = '<b>TERIMA KASIH ATAS DUKUNGAN ANDA &#9679; </b>';
   $('rtTrack').innerHTML = head + items + head + items;
+  if($('pjTrack')) $('pjTrack').innerHTML = head + items + head + items;
   document.querySelectorAll('.x').forEach(b=>b.onclick=async ()=>{
     if(confirm('Hapus transaksi ini?') && askPass('HAPUS transaksi')){
       try{ setSync('','Menghapus…'); data=await apiPost({action:'delete',id:b.dataset.k}); render(); setSync('ok','Terhapus • '+new Date().toLocaleTimeString('id-ID')); }
@@ -776,46 +833,13 @@ bind('fT','t','Transfer/Tunai','mOkT','mErrT');
 bind('fC','c','Cash/Komitmen','mOkC','mErrC');
 
 /* ================= AKSI HASIL ================= */
-$('bCsv').onclick=async ()=>{
-  if(!askPass('UNDUH EXCEL')) return;                       // minta password 3.0
-  if(typeof XLSX==='undefined'){ alert('Komponen Excel belum termuat. Pastikan ada internet, lalu coba lagi.'); return; }
-  if(apiReady){                                             // ambil salinan TERBARU dari Google Sheet
-    try{ setSync('','Mengambil data terbaru dari Google Sheet…'); data=await apiGet(); render();
-      setSync('ok','Data terbaru diambil • '+data.length+' transaksi'); }
-    catch(err){ alert('Gagal mengambil data terbaru: '+err.message+'\nExcel akan memakai data yang sedang tampil.'); }
-  }
-  const tot=sum(data);
-  const terima=data.filter(d=>!isKom(d)).reduce((s,d)=>s+Number(d.nominal||0),0);
-  const kom=data.filter(d=>isKom(d)).reduce((s,d)=>s+Number(d.nominal||0),0);
-  const aoa=[];
-  aoa.push(['REKAPITULASI DANA MASUK — KONSER GKPI JK DEPOK']);
-  aoa.push(['Diekspor: '+new Date().toLocaleString('id-ID')]);
-  aoa.push([]);
-  aoa.push(['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status']);
-  data.forEach((d,i)=>aoa.push([i+1, dmy(d.tanggal)+' '+d.waktu, d.sumber, d.nama, d.ket, Number(d.nominal)||0, d.petugas, isKom(d)?'Komitmen':'Diterima']));
-  const totRow=aoa.length;
-  aoa.push(['','','','','TOTAL SELURUHNYA', tot,'','']);
-  aoa.push(['','','','','- Sudah diterima (kas/bank)', terima,'','']);
-  aoa.push(['','','','','- Masih komitmen (belum diterima)', kom,'','']);
-  const ws=XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols']=[{wch:5},{wch:16},{wch:16},{wch:26},{wch:14},{wch:16},{wch:16},{wch:12}];
-  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:1,c:0},e:{r:1,c:7}}];
-  const R=XLSX.utils.decode_range(ws['!ref']);
-  const money='#,##0';
-  const brdr={style:'thin',color:{rgb:'D1D5DB'}};
-  for(let r=0;r<=R.e.r;r++){ for(let c=0;c<=R.e.c;c++){
-    const ref=XLSX.utils.encode_cell({r,c});
-    if(!ws[ref]) ws[ref]={t:'s',v:''};
-    const cell=ws[ref]; cell.s=cell.s||{};
-    if(r===0){ cell.s={font:{bold:true,sz:14,color:{rgb:'1F2937'}},alignment:{horizontal:'center'}}; }
-    else if(r===1){ cell.s={font:{italic:true,sz:9,color:{rgb:'6B7280'}},alignment:{horizontal:'center'}}; }
-    else if(r===3){ cell.s={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0F766E'}},alignment:{horizontal:c===5?'right':'left'},border:{top:brdr,bottom:brdr,left:brdr,right:brdr}}; }
-    else if(r>=totRow){ cell.s={font:{bold:true,color:{rgb:'B45309'}}}; if(c===5) cell.z=money; }
-    else if(r>3 && r<totRow){ if(c===5){cell.z=money;cell.s={alignment:{horizontal:'right'}};} else if(c===0){cell.s={alignment:{horizontal:'center'}};} cell.s.border={bottom:{style:'hair',color:{rgb:'E5E7EB'}}}; }
-  }}
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Rekap Dana');
-  XLSX.writeFile(wb, 'rekap-dana-'+new Date().toISOString().slice(0,10)+'.xlsx');
+$('bCsv').onclick=()=>{
+  const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status'];
+  const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima']);
+  const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='rekap-dana-masuk.csv'; a.click();
 };
 $('bPrint').onclick=async ()=>{
   if(!askPass('CETAK / PDF')) return;                 // minta password 3.0
@@ -844,6 +868,7 @@ function setProj(on){
   }
 }
 $('bProj').onclick=()=>{setProj(true);render();}; $('bExit').onclick=()=>{setProj(false);render();};
+if($('pjExit')) $('pjExit').onclick=()=>{setProj(false);render();};
 document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement){ document.body.classList.remove('proj'); render(); } });
 $('bGoal').onclick=()=>{
   const now=Number(localStorage.getItem(GKEY)||0);
@@ -854,47 +879,13 @@ $('bGoal').onclick=()=>{
 };
 let rsz; window.addEventListener('resize',()=>{ clearTimeout(rsz); rsz=setTimeout(()=>trend(data),150); });
 $('bProj').addEventListener('click',()=>setTimeout(()=>trend(data),350));
-
-/* ================= PWA: INSTALL & SERVICE WORKER ================= */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault(); deferredPrompt=e;
-  const b=$('bInstall'); if(b) b.style.display='inline-block';
-});
-(function(){
-  const b=$('bInstall'); if(!b) return;
-  b.onclick=async ()=>{
-    if(!deferredPrompt){
-      alert('Untuk memasang:\n• Android/Chrome: menu ⋮ → "Tambahkan ke layar utama".\n• iPhone/Safari: tombol Bagikan → "Tambah ke Layar Utama".\n• Laptop: ikon install di ujung kanan address bar.');
-      return;
-    }
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt=null; b.style.display='none';
-  };
-})();
-window.addEventListener('appinstalled',()=>{ const b=$('bInstall'); if(b) b.style.display='none'; });
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    // updateViaCache:'none' -> browser tidak meng-cache sw.js, selalu cek versi terbaru
-    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
-      reg.update();                              // paksa cek update saat buka
-      setInterval(()=>reg.update(), 60*60*1000); // cek tiap 1 jam bila app dibiarkan terbuka
-    }).catch(err=>console.warn('SW gagal:',err));
-    // Bila service worker baru mengambil alih, muat ulang sekali agar konten paling baru
-    let reloaded=false;
-    navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      if(reloaded) return; reloaded=true; location.reload();
-    });
-  });
-}
 /* ================= TIMER ACARA (persist di localStorage) ================= */
 const TKEY='gkpi_timer_v1';
 function tLoad(){ try{return JSON.parse(localStorage.getItem(TKEY))||{acc:0,start:null,run:false};}catch(e){return{acc:0,start:null,run:false};} }
 function tSave(s){ localStorage.setItem(TKEY, JSON.stringify(s)); }
 function tElapsed(s){ return s.acc + (s.run && s.start ? Date.now()-s.start : 0); }
 function tFmt(ms){ let t=Math.floor(ms/1000); const h=Math.floor(t/3600),m=Math.floor(t%3600/60),d=t%60; const z=n=>(n<10?'0':'')+n; return z(h)+':'+z(m)+':'+z(d); }
-function tRender(){ const s=tLoad(); const box=$('timerBox'); if($('tVal')) $('tVal').textContent=tFmt(tElapsed(s)); if(box) box.classList.toggle('run', !!s.run); }
+function tRender(){ const s=tLoad(); const el=tFmt(tElapsed(s)); const box=$('timerBox'); if($('tVal')) $('tVal').textContent=el; if(box) box.classList.toggle('run', !!s.run); if($('pjTVal')) $('pjTVal').textContent=el; const pb=$('pjTimerBox'); if(pb) pb.classList.toggle('run', !!s.run); }
 $('tStart') && ($('tStart').onclick=()=>{ let s=tLoad(); if(!s.run){ s.start=Date.now(); s.run=true; tSave(s); } tRender(); });
 $('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
 $('tReset') && ($('tReset').onclick=()=>{ if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
@@ -902,7 +893,7 @@ setInterval(tRender, 1000); tRender();
 /* ================= ANIMASI DONASI BARU (mode proyektor) ================= */
 let knownIds=null;               // null = belum load pertama
 let celQueue=[], celBusy=false;
-function celKind(d){ return isKom(d)?'KOMITMEN' : d.sumber==='QRIS/Online'?'QRIS / ONLINE' : d.sumber==='Transfer/Tunai'?'TRANSFER / TUNAI' : 'CASH'; }
+function celKind(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('komitmen')>=0) return isKom(d)?'KOMITMEN (BELUM DITERIMA)':'KOMITMEN (SUDAH DITERIMA)'; return d.sumber==='QRIS/Online'?'QRIS / ONLINE' : d.sumber==='Transfer/Tunai'?'TRANSFER / TUNAI' : 'CASH'; }
 function celColor(d){ return isKom(d)?'var(--gold)' : d.sumber==='QRIS/Online'?'var(--qris)' : d.sumber==='Transfer/Tunai'?'var(--trf)' : 'var(--cash)'; }
 function detectNew(){
   if(knownIds===null){ knownIds=new Set(data.map(d=>d.id)); return; }  // load pertama: catat saja, jangan animasi
