@@ -21,7 +21,9 @@ const OFFLINE_SHELL = [
   './icon-512.png',
   './icon-512-maskable.png',
   './apple-touch-icon.png',
-  './favicon-64.png'
+  './favicon-64.png',
+  './logo-panitia.png',
+  './logo-gkpi.png'
 ];
 
 // Install: simpan cadangan offline, lalu langsung aktif
@@ -78,7 +80,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 3) Aset lain (ikon/manifest) -> NETWORK-FIRST juga, fallback ke cache saat offline
+  // 3) Aset lain (ikon/logo/manifest) -> NETWORK-FIRST juga, fallback ke cache saat offline
   e.respondWith(
     fetch(req)
       .then((res) => cachePut(req, res))
