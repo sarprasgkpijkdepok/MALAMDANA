@@ -302,6 +302,29 @@ background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:12px}
 .vsum .vc.bl{background:rgba(248,113,113,.10);border-color:var(--red)}
 .vsum .vc .l{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mut)}
 .vsum .vc .v{font-size:16px;font-weight:700;margin-top:4px}
+/* ====== Pesan ke Layar (operator → MC) ====== */
+.msgModal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(2,6,23,.72);align-items:center;justify-content:center;padding:16px}
+.msgModal.show{display:flex}
+.msgBox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:88vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+.msgBox h3{margin:0 0 4px;font-size:18px;color:var(--gold)}
+.msgBox h4{margin:18px 0 8px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.msgBox p{font-size:12px;color:var(--mut);margin:0 0 12px}
+.msgBox textarea{width:100%;min-height:96px;padding:11px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--txt);font-size:14px;font-family:inherit;resize:vertical}
+.msgBtns{display:flex;gap:10px;margin-top:12px}
+.msgList{display:flex;flex-direction:column;gap:8px}
+.msgItem{display:flex;gap:10px;align-items:flex-start;background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.msgItem .mtxt{flex:1;min-width:0;font-size:13px;color:var(--txt);word-break:break-word}
+.msgItem .mtime{font-size:11px;color:var(--mut);margin-top:3px}
+.msgItem .mre{flex:none;background:var(--gold);color:#1f2937;border:0;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.msgItem .mdel{flex:none;background:none;border:0;color:var(--red);font-size:16px;cursor:pointer;font-weight:700}
+.msgEmpty{color:var(--mut);font-size:13px;text-align:center;padding:14px}
+#screenMsg{display:none;position:fixed;left:50%;top:6vh;z-index:9998;max-width:82vw;padding:3vh 4vw;border-radius:20px;text-align:center;opacity:0;background:linear-gradient(150deg,#1e3a8a,#0f766e 70%,#0b1220);border:3px solid var(--qris);box-shadow:0 20px 80px rgba(0,0,0,.6),0 0 60px rgba(56,189,248,.35)}
+body.proj #screenMsg.show{display:block;animation:msgIn .45s cubic-bezier(.2,1.3,.4,1) forwards}
+body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
+@keyframes msgIn{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes msgOut{from{opacity:1;transform:translateX(-50%) translateY(0)}to{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+#screenMsg .ic{font-size:5vh;margin-bottom:1vh}
+#screenMsg .mt{font-size:4vh;font-weight:800;color:#fff;line-height:1.25;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -324,8 +347,8 @@ background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:12px}
   <button data-p="pVerif">Verifikasi Bendahara <span class="lk">&#128274;</span></button>
 </div>
 <div class="pane on" id="pDash">
-  <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px">&#128260; Muat Ulang</button></div>
-  <div class="projbar"><button type="button" class="s" id="tStart">&#9654; Mulai Acara</button><button type="button" class="s" id="tPause">&#9208; Jeda</button><button type="button" class="s" id="tReset">&#9209; Reset Waktu</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937">&#128241; Install App</button><button type="button" class="s" id="bGoal">&#127919; Atur Target</button><button type="button" class="s" id="bProj">&#128250; Mode Proyektor (Layar Penuh)</button></div>
+  <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px"> Muat Ulang</button><button type="button" class="s" id="bMsg" style="background:var(--qris);color:#0b1220;padding:6px 12px">💬 Pesan ke Layar</button></div>
+  <div class="projbar"><button type="button" class="s" id="tStart">▶ Mulai Acara</button><button type="button" class="s" id="tPause">⏸ Jeda</button><button type="button" class="s" id="tReset">⏹ Reset Waktu</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937"> Install App</button><button type="button" class="s" id="bGoal"> Atur Target</button><button type="button" class="s" id="bProj"> Mode Proyektor (Layar Penuh)</button></div>
   <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
   <div class="kpi">
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
@@ -621,8 +644,29 @@ background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:12px}
   <div class="nm" id="celNm"></div>
   <div class="bless" id="celBless">Tuhan Yesus Memberkati &#128591;</div>
 </div>
+<!-- ⬇⬇⬇ TEMPEL PATCH 3 DI SINI ⬇⬇⬇ -->
+<!-- Popup pesan operator (muncul di mode proyektor, 5 detik) -->
+<div id="screenMsg"><div class="ic">📢</div><div class="mt" id="screenMsgText"></div></div>
+<!-- Modal "Pesan ke Layar" (operator) -->
+<div id="msgModal" class="msgModal">
+  <div class="msgBox">
+    <h3>💬 Pesan ke Layar</h3>
+    <p>Tulis himbauan singkat untuk MC. Pesan muncul di Mode Proyektor selama 5 detik. Semua pesan tersimpan dan bisa ditampilkan ulang.</p>
+    <textarea id="msgText" placeholder="cth. MC, mohon persilakan jemaat kembali ke tempat duduk"></textarea>
+    <div class="msgBtns">
+      <button type="button" class="p" id="bMsgSend" style="flex:1">📤 Kirim ke Layar</button>
+      <button type="button" class="s" id="bMsgClose">Tutup</button>
+    </div>
+    <h4>Riwayat Pesan</h4>
+    <div id="msgList" class="msgList"></div>
+  </div>
+</div>
+<!-- ⬆⬆⬆ SAMPAI SINI ⬆⬆⬆ -->
 </div>
 <script>
+  document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){ pjLast=0; }   // reset basis waktu → carousel tidak lompat/ngebut
+});
 /* ====== LOGO (tertanam, tanpa file terpisah) ====== */
 const LOGO='logo-gkpi.png';
 (function(){var l=document.getElementById('logo');if(l)l.src=LOGO;})();
@@ -664,6 +708,7 @@ async function apiGet(){
   const res=await fetch(API,{method:'GET'});
   const j=await res.json();
   if(!j.ok) throw new Error(j.error||'Gagal membaca data');
+  if(Array.isArray(j.pesan)){ pesanData=j.pesan; handlePesanPoll(); if($('msgModal')&&$('msgModal').classList.contains('show')) renderMsgList(); }
   return j.data||[];
 }
 async function apiPost(payload){
@@ -881,6 +926,7 @@ function render(){
     '<span style="color:var(--mut)">'+kom.length+' transaksi</span></div>';
   $('kTerima').textContent=rp(sA); $('kKom').textContent=rp(sKom);
   if($('pjVal')){ $('pjVal').textContent=rp(sA); fitBig(); }   // Total Donasi = semua tercatat (termasuk komitmen)
+  if($('pjSubN')) $('pjSubN').innerHTML='<b>'+data.length+'</b> donasi tercatat';
   renderProjList();
   $('barQ').style.width=(sTerima?sQ/sTerima*100:34)+'%';
   $('barT').style.width=(sTerima?sT/sTerima*100:33)+'%';
@@ -982,7 +1028,7 @@ function setProj(on){
     if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
   }
 }
-$('bProj').onclick=()=>{ if(!askPass('MODE PROYEKTOR')) return; setProj(true);render(); };
+$('bProj').onclick=()=>{ setProj(true);render(); };
 $('bExit').onclick=()=>{ if(!askPass('KELUAR MODE PROYEKTOR')) return; setProj(false);render(); };
 if($('pjExit')) $('pjExit').onclick=()=>{ if(!askPass('KELUAR MODE PROYEKTOR')) return; setProj(false);render(); };
 document.addEventListener('fullscreenchange',()=>{
@@ -1180,28 +1226,34 @@ function pjSetMode(m){
 function pjEnterManual(){ pjSetMode('manual'); clearTimeout(pjManualTimer); pjManualTimer=setTimeout(()=>pjSetMode('auto'), PJ_RESUME); }
 function pjClampY(){ if(pjY<0)pjY=0; const wrapH=$('pjListWrap').clientHeight; const mx=Math.max(0,pjOneH-wrapH); if(pjY>mx)pjY=mx; }
 function pjSetupScroll(html){
-  cancelAnimationFrame(pjScrollRAF);
   const wrap=$('pjListWrap'), sc=$('pjScroller'); if(!wrap||!sc) return;
   requestAnimationFrame(()=>{
     const wrapH=wrap.clientHeight;
     sc.innerHTML=html; pjOneH=sc.scrollHeight;       // ukur tinggi 1 salinan
     pjCanScroll = pjOneH>wrapH+4;
-    if(!pjCanScroll){ pjSetMode('auto'); sc.style.transform='translateY(0)'; pjY=0; return; }
+    if(!pjCanScroll){ pjSetMode('auto'); sc.style.transform='translateY(0)'; pjY=0; pjStartLoop(); return; }
     sc.innerHTML=html+html;                          // gandakan utk loop mulus
     if(pjY>pjOneH) pjY-=pjOneH;
     sc.style.transform='translateY('+(-pjY)+'px)';
     if(!pjManual && !pjPauseUntil) pjPauseUntil=performance.now()+1800;
-    let last=performance.now();
-    function step(now){
-      const dt=(now-last)/1000; last=now;
-      if(!pjManual && now>=pjPauseUntil){
-        pjY+=PJ_SPEED*dt; if(pjY>=pjOneH) pjY-=pjOneH;
-        sc.style.transform='translateY('+(-pjY)+'px)';
-      }
-      pjScrollRAF=requestAnimationFrame(step);
-    }
-    pjScrollRAF=requestAnimationFrame(step);
+    pjStartLoop();                                   // pastikan HANYA 1 loop yang jalan
   });
+}
+/* ---- SATU loop carousel permanen: anti-dobel & anti "ngebut" saat Alt+Tab ---- */
+let pjLast=0;
+function pjStep(now){
+  if(!pjLast) pjLast=now;
+  let dt=(now-pjLast)/1000; pjLast=now;
+  if(dt>0.1) dt=0.1;                                 // batasi lonjakan saat kembali dari background
+  if(pjCanScroll && !pjManual && now>=pjPauseUntil){
+    pjY+=PJ_SPEED*dt; if(pjY>=pjOneH) pjY-=pjOneH;
+    const sc=$('pjScroller'); if(sc) sc.style.transform='translateY('+(-pjY)+'px)';
+  }
+  pjScrollRAF=requestAnimationFrame(pjStep);
+}
+function pjStartLoop(){
+  if(pjScrollRAF!==null) return;                     // sudah jalan → jangan buat loop baru
+  pjLast=0; pjScrollRAF=requestAnimationFrame(pjStep);
 }
 (function pjBind(){
   const wrap=$('pjListWrap'); if(!wrap) return;
@@ -1321,6 +1373,89 @@ function renderVerif(){
 }; })();
 /* Kunci tab Verifikasi (password sama = 3.0) */
 guard('pwV','bV','lkV','ctV','eV','lockV');
+/* ================= PESAN KE LAYAR (versi Google Sheet, lintas-laptop) ================= */
+let pesanData=[];            // daftar pesan dari Sheet
+let lastShownStamp=null;     // show_ts terbesar yang sudah ditampilkan di proyektor
+
+function msgTime(ts){ return new Date(ts).toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}); }
+
+/* Kirim payload pesan ke Apps Script */
+async function apiMsg(payload){
+  const res=await fetch(API,{method:'POST',body:JSON.stringify(payload)});
+  const j=await res.json();
+  if(!j.ok) throw new Error(j.error||'Gagal');
+  if(Array.isArray(j.pesan)) pesanData=j.pesan;
+  return j.pesan||[];
+}
+
+/* Deteksi perintah tampil terbaru → munculkan popup di proyektor */
+function handlePesanPoll(){
+  if(!pesanData.length){ if(lastShownStamp===null) lastShownStamp=0; return; }
+  const latest=pesanData.reduce((a,b)=> b.show_ts>a.show_ts?b:a);
+  if(lastShownStamp===null){ lastShownStamp=latest.show_ts; return; }  // baseline: jangan pop saat pertama load
+  if(latest.show_ts>lastShownStamp){ lastShownStamp=latest.show_ts; showScreenMsg(latest.text); }
+}
+
+/* Popup 5 detik (hanya di mode proyektor) */
+let screenMsgTimer=null;
+function showScreenMsg(text){
+  const box=$('screenMsg'); if(!box) return;
+  if(!document.body.classList.contains('proj')) return;
+  $('screenMsgText').textContent=text;
+  box.classList.remove('hide'); box.classList.add('show');
+  clearTimeout(screenMsgTimer);
+  screenMsgTimer=setTimeout(()=>{ box.classList.remove('show'); box.classList.add('hide');
+    setTimeout(()=>box.classList.remove('hide'),400); }, 5000);   // JEDA 5 DETIK
+}
+
+/* Daftar/riwayat pesan (diambil dari Sheet → tampil di semua laptop) */
+function renderMsgList(){
+  const box=$('msgList'); if(!box) return;
+  if(!pesanData.length){ box.innerHTML='<div class="msgEmpty">Belum ada pesan.</div>'; return; }
+  const list=pesanData.slice().sort((a,b)=>b.ts-a.ts);
+  box.innerHTML=list.map(m=>
+    '<div class="msgItem"><div class="mtxt">'+esc(m.text)+
+    '<div class="mtime">'+msgTime(m.ts)+'</div></div>'+
+    '<button class="mre" data-re="'+esc(m.id)+'">↻ Tampilkan</button>'+
+    '<button class="mdel" data-del="'+esc(m.id)+'" title="Hapus">&times;</button></div>').join('');
+  box.querySelectorAll('.mre').forEach(b=>b.onclick=()=>replayMsg(b.dataset.re));
+  box.querySelectorAll('.mdel').forEach(b=>b.onclick=()=>delMsg(b.dataset.del));
+}
+
+async function sendMsg(){
+  const t=$('msgText').value.trim(); if(!t){ $('msgText').focus(); return; }
+  const btn=$('bMsgSend'), old=btn.textContent; btn.disabled=true; btn.textContent='Mengirim…';
+  try{ await apiMsg({action:'msgAdd', text:t}); $('msgText').value=''; renderMsgList(); }
+  catch(err){ alert('Gagal kirim: '+err.message); }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+async function replayMsg(id){
+  try{ await apiMsg({action:'msgShow', id:id}); }
+  catch(err){ alert('Gagal menampilkan ulang: '+err.message); }
+}
+async function delMsg(id){
+  if(!confirm('Hapus pesan ini?')) return;
+  try{ await apiMsg({action:'msgDel', id:id}); renderMsgList(); }
+  catch(err){ alert('Gagal menghapus: '+err.message); }
+}
+
+/* Polling ringan khusus pesan — jalan tiap 4 detik saat MODE PROYEKTOR (near-instant) */
+async function pollPesan(){
+  if(!apiReady) return;
+  try{
+    const res=await fetch(API+'?type=pesan',{method:'GET'});
+    const j=await res.json();
+    if(j.ok && Array.isArray(j.pesan)){ pesanData=j.pesan; handlePesanPoll();
+      if($('msgModal')&&$('msgModal').classList.contains('show')) renderMsgList(); }
+  }catch(e){}
+}
+setInterval(()=>{ if(document.body.classList.contains('proj')) pollPesan(); }, 4000);
+
+/* Tombol & modal */
+$('bMsg') && ($('bMsg').onclick=()=>{ $('msgModal').classList.add('show'); pollPesan(); renderMsgList(); setTimeout(()=>$('msgText').focus(),50); });
+$('bMsgClose') && ($('bMsgClose').onclick=()=>$('msgModal').classList.remove('show'));
+$('msgModal') && ($('msgModal').onclick=e=>{ if(e.target===$('msgModal')) $('msgModal').classList.remove('show'); });
+$('bMsgSend') && ($('bMsgSend').onclick=sendMsg);
 /* ================= INIT ================= */
 (function init(){
   const now=new Date();
