@@ -1120,7 +1120,7 @@ function celDisplay(d){
   box.classList.remove('hide'); box.classList.add('show');
   clearTimeout(celManualTimer);
   celManualTimer=setTimeout(()=>{ box.classList.remove('show'); box.classList.add('hide');
-    setTimeout(()=>box.classList.remove('hide'),500); }, 8000);
+    setTimeout(()=>box.classList.remove('hide'),500); }, 10000);
 }
 function celReplay(step){
   if(!document.body.classList.contains('proj')) return;
