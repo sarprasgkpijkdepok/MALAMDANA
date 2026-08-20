@@ -78,7 +78,7 @@ footer{text-align:center;color:var(--mut);font-size:11px;margin-top:16px}
 .dnwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
 .dn{width:190px;height:190px;flex:none}
 .dn circle{transition:stroke-dasharray .8s ease,stroke-dashoffset .8s ease}
-.dnv{fill:var(--gold);font-size:20px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+.dnv{fill:#fff;font-size:23px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
 .dnk{fill:var(--mut);font-size:9px;letter-spacing:2px;text-anchor:middle}
 .lg{display:flex;flex-direction:column;gap:10px}
 .lgi{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--mut)}
@@ -332,7 +332,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
 <header>
   <img id="hdrPanitia" alt="Logo Panitia Pembangunan">
   <div class="ht">
-    <h1>REKAPITULASI DANA MASUK</h1>
+    <h1>SISTEM PENGINPUTAN & REKAPITULASI DANA MASUK</h1>
     <p>KONSER PENGGALANGAN DANA — GKPI JK DEPOK</p>
     <div class="timer" id="timerBox"><span class="dot" id="tDot"></span><div><div class="tl">Durasi Acara</div><div class="tv" id="tVal">00:00:00</div></div></div>
   </div>
@@ -348,7 +348,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
 </div>
 <div class="pane on" id="pDash">
   <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px"> Muat Ulang</button><button type="button" class="s" id="bMsg" style="background:var(--qris);color:#0b1220;padding:6px 12px">💬 Pesan ke Layar</button></div>
-  <div class="projbar"><button type="button" class="s" id="tStart">▶ Mulai Acara</button><button type="button" class="s" id="tPause">⏸ Jeda</button><button type="button" class="s" id="tReset">⏹ Reset Waktu</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937"> Install App</button><button type="button" class="s" id="bGoal"> Atur Target</button><button type="button" class="s" id="bProj"> Mode Proyektor (Layar Penuh)</button></div>
+  <div class="projbar"><button type="button" class="s" id="tStart">▶ Mulai Acara</button><button type="button" class="s" id="tReset">⏹ Selesai Acara</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937"> Install App</button><button type="button" class="s" id="bGoal"> Atur Target</button><button type="button" class="s" id="bProj"> Mode Proyektor (Layar Penuh)</button></div>
   <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
   <div class="kpi">
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
@@ -680,6 +680,7 @@ const LOGO_GKPI='logo-gkpi.png';
 const API = 'https://script.google.com/macros/s/AKfycbymr_oGTfYyhgMN40ASA2ahFpgLYv8GVBsV5qIKeQMSU0W3cL3Hs1cssKWqRdpiimJ6-g/exec';
 
 const PASS='3.0';                 // password tab / edit / hapus
+const MSG_PASS='3.0';             // password kirim pesan ke layar
 const GKEY='gkpi_depok_target_v3';// target disimpan lokal per perangkat
 
 /* Data awal (dipakai hanya bila API belum diisi / gagal, agar dashboard tetap tampil) */
@@ -1057,7 +1058,7 @@ function tFmt(ms){ let t=Math.floor(ms/1000); const h=Math.floor(t/3600),m=Math.
 function tRender(){ const s=tLoad(); const el=tFmt(tElapsed(s)); const box=$('timerBox'); if($('tVal')) $('tVal').textContent=el; if(box) box.classList.toggle('run', !!s.run); if($('pjTVal')) $('pjTVal').textContent=el; const pb=$('pjTimerBox'); if(pb) pb.classList.toggle('run', !!s.run); }
 $('tStart') && ($('tStart').onclick=()=>{ if(!askPass('MULAI ACARA')) return; let s=tLoad(); if(!s.run){ s.start=Date.now(); s.run=true; tSave(s); } tRender(); });
 $('tPause') && ($('tPause').onclick=()=>{ let s=tLoad(); if(s.run){ s.acc+=Date.now()-s.start; s.run=false; s.start=null; tSave(s); } tRender(); });
-$('tReset') && ($('tReset').onclick=()=>{ if(!askPass('RESET WAKTU')) return; if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
+$('tReset') && ($('tReset').onclick=()=>{ if(!askPass('SELESAI ACARA')) return; if(confirm('Reset durasi acara ke 00:00:00?')){ tSave({acc:0,start:null,run:false}); tRender(); } });
 setInterval(tRender, 1000); tRender();
 /* ================= PWA: INSTALL & SERVICE WORKER ================= */
 let deferredPrompt=null;
@@ -1452,7 +1453,11 @@ async function pollPesan(){
 setInterval(()=>{ if(document.body.classList.contains('proj')) pollPesan(); }, 4000);
 
 /* Tombol & modal */
-$('bMsg') && ($('bMsg').onclick=()=>{ $('msgModal').classList.add('show'); pollPesan(); renderMsgList(); setTimeout(()=>$('msgText').focus(),50); });
+$('bMsg') && ($('bMsg').onclick=()=>{const p = prompt('Masukkan password Pesan ke Layar:');if(p===null) return;if(p !== MSG_PASS){alert('Password salah.');return;}
+  $('msgModal').classList.add('show');pollPesan();
+  renderMsgList();
+  setTimeout(()=>$('msgText').focus(),50);
+});
 $('bMsgClose') && ($('bMsgClose').onclick=()=>$('msgModal').classList.remove('show'));
 $('msgModal') && ($('msgModal').onclick=e=>{ if(e.target===$('msgModal')) $('msgModal').classList.remove('show'); });
 $('bMsgSend') && ($('bMsgSend').onclick=sendMsg);
