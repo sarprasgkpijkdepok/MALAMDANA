@@ -63,12 +63,13 @@ tfoot td{font-weight:700;color:var(--gold);border-top:2px solid var(--line)}
 .note{font-size:12px;color:var(--mut);margin:0 0 12px}
 .rt{background:linear-gradient(90deg,#0b1220,#132038,#0b1220);border:1px solid var(--line);
 border-radius:10px;padding:11px 0;overflow:hidden;position:relative}
-.rt .track{display:inline-block;white-space:nowrap;padding-left:100%;animation:sc 90s linear infinite}
+.rt .track{display:inline-block;white-space:nowrap;padding-left:0;will-change:transform}
 .rt:hover .track{animation-play-state:paused}
 .rt b{color:var(--gold);font-size:15px}
 .rt span.it{color:var(--txt);font-size:15px;margin:0 6px}
 .rt span.sep{color:var(--qris);margin:0 12px;font-weight:700}
 @keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+@keyframes tickerMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .lock{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:26px;text-align:center;max-width:380px;margin:26px auto}
 .lock h3{margin:0 0 6px;font-size:16px}
 .lock p{font-size:12px;color:var(--mut);margin:0 0 14px}
@@ -101,7 +102,7 @@ footer{text-align:center;color:var(--mut);font-size:11px;margin-top:16px}
 .tr .dot{fill:var(--gold);stroke:#0f172a;stroke-width:2}
 .gbar{height:26px;background:#0b1220;border-radius:13px;overflow:hidden}
 .gbar i{display:block;height:100%;width:0;border-radius:13px;transition:width 1s ease;
-background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
+background:linear-gradient(90deg,#ff3030,#fbbf24,#34d399)}
 .grow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:9px;font-size:13px;color:var(--mut)}
 .grow b{color:var(--gold);font-size:17px}
 .gsis{color:var(--trf);font-weight:600}
@@ -259,12 +260,12 @@ color:#fff;text-shadow:0 4px 30px rgba(251,191,36,.25);white-space:nowrap}
 .pjGoal .gsisa{font-size:2.4vh;color:var(--trf);font-weight:700}
 .pjGbar{height:4.4vh;background:#0b1220;border-radius:2.2vh;overflow:hidden;position:relative;border:1px solid var(--line)}
 .pjGbar i{display:block;height:100%;width:0;border-radius:2.2vh;transition:width 1s ease;
-background:linear-gradient(90deg,#38bdf8,#34d399,#fbbf24)}
+background:linear-gradient(90deg,#ff3030,#fbbf24,#34d399)}
 .pjGbar .gpc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
 font-size:2.6vh;font-weight:800;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .pjRt{flex:none;background:linear-gradient(90deg,#0b1220,#132038,#0b1220);border:1px solid var(--line);
 border-radius:12px;padding:1.4vh 0;overflow:hidden;position:relative;margin-top:.4vh}
-.pjRt .track{display:inline-block;white-space:nowrap;padding-left:100%;animation:sc 90s linear infinite}
+.pjRt .track{display:inline-block;white-space:nowrap;padding-left:0;will-change:transform}
 .pjRt b{color:var(--gold);font-size:2.6vh}
 .pjRt span.it{color:var(--txt);font-size:2.6vh;margin:0 8px}
 .pjRt span.sep{color:var(--qris);margin:0 14px;font-weight:700;font-size:2.6vh}
@@ -435,7 +436,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div><label for="qTgl">Tanggal</label><input type="date" id="qTgl" required></div>
       <div><label for="qWkt">Waktu</label><input type="time" id="qWkt" required></div>
       <div><label for="qNama">Nama Pemberi / Sumber</label><input type="text" id="qNama" placeholder="cth. Orang 1" required></div>
-      <div><label for="qKet">Keterangan</label><select id="qKet"><option>QRIS</option><option>Online</option><option>Lainnya</option></select></div>
+      <div><label for="qKet">Keterangan</label><select id="qKet"><option>QRIS</option></select></div>
       <div><label for="qNom">Nominal (Rp)</label><input type="number" id="qNom" min="1" step="any" inputmode="numeric" placeholder="1000000" required></div>
       <div><label for="qPtg">Diinput oleh</label><input type="text" id="qPtg" value="Petugas QRIS" required></div>
       <div class="full"><button type="submit" class="p" id="btnQ">+ Simpan Transaksi QRIS</button>
@@ -470,7 +471,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div><label for="tTgl">Tanggal</label><input type="date" id="tTgl" required></div>
       <div><label for="tWkt">Waktu</label><input type="time" id="tWkt" required></div>
       <div><label for="tNama">Nama Pemberi / Sumber</label><input type="text" id="tNama" placeholder="cth. Orang 1" required></div>
-      <div><label for="tKet">Keterangan</label><select id="tKet"><option>Transfer</option><option>Lainnya</option></select></div>
+      <div><label for="tKet">Keterangan</label><select id="tKet"><option>Transfer</option></select></div>
       <div><label for="tNom">Nominal (Rp)</label><input type="number" id="tNom" min="1" step="any" inputmode="numeric" placeholder="2000000" required></div>
       <div><label for="tPtg">Diinput oleh</label><input type="text" id="tPtg" value="Petugas Transfer" required></div>
       <div class="full"><button type="submit" class="p" id="btnT">+ Simpan Transaksi Transfer</button>
@@ -579,6 +580,21 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
     <div class="vsum">
       <div class="vc mk"><div class="l">Sudah Diverifikasi Masuk</div><div class="v" id="vSumMasuk">Rp 0 • 0 transaksi</div></div>
       <div class="vc bl"><div class="l">Belum / Belum Masuk</div><div class="v" id="vSumBelum">Rp 0 • 0 transaksi</div></div>
+    </div>
+    <div class="filterbar">
+      <div><label for="vFrom">Dari Tanggal</label><input type="date" id="vFrom"></div>
+      <div><label for="vFromT">Dari Jam</label><input type="time" id="vFromT"></div>
+      <div><label for="vTo">Sampai Tanggal</label><input type="date" id="vTo"></div>
+      <div><label for="vToT">Sampai Jam</label><input type="time" id="vToT"></div>
+      <div><label for="vSrc">Sumber</label><select id="vSrc">
+        <option value="">Semua Sumber</option>
+        <option>QRIS/Online</option>
+        <option>Transfer/Tunai</option>
+        <option>Cash/Komitmen</option>
+      </select></div>
+      <div><label for="vKet">Keterangan</label><select id="vKet"><option value="">Semua Keterangan</option></select></div>
+      <div><label>&nbsp;</label><button type="button" class="s" id="vReset" style="width:100%">Reset Filter</button></div>
+      <div class="fcount" id="vCount">0 transaksi</div>
     </div>
     <div class="full" style="margin-bottom:12px">
       <div style="min-width:210px"><label for="vFilter" style="font-size:12px;color:var(--mut)">Filter Verifikasi</label>
@@ -906,6 +922,7 @@ function goal(sA){
   $('gSisa').textContent = sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi';
 }
 function render(){
+  buildVerif();
   data.sort((a,b)=>(a.tanggal+' '+a.waktu).localeCompare(b.tanggal+' '+b.waktu));
   const tQ=data.filter(d=>d.sumber==='QRIS/Online'), tT=data.filter(d=>d.sumber==='Transfer/Tunai');
   const tC=data.filter(d=>d.sumber==='Cash/Komitmen');
@@ -952,9 +969,10 @@ function render(){
   const items = data.length
     ? data.map(d=>'<span class="it">'+esc(d.nama)+' - '+rp(d.nominal)+(isKom(d)?' (komitmen)':'')+'</span><span class="sep">&#9679;</span>').join('')
     : '<span class="it">Belum ada transaksi.</span>';
-  const head = '<b>TERIMA KASIH ATAS DUKUNGAN ANDA - TUHAN YESUS MEMBERKATI &#9679; </b>';
-  $('rtTrack').innerHTML = head + items + head + items;
-  if($('pjTrack')) $('pjTrack').innerHTML = head + items + head + items;
+  const head = '<b>TERIMA KASIH ATAS DUKUNGAN ANDA - TUHAN YESUS MEMBERKATI ● </b>';
+  const tickerHtml = head + items;        // SATU salinan; helper menggandakan utk loop
+  setupTicker($('rtTrack'), tickerHtml);
+  setupTicker($('pjTrack'), tickerHtml);
   document.querySelectorAll('.x').forEach(b=>b.onclick=async ()=>{
     if(confirm('Hapus transaksi ini?') && askPass('HAPUS transaksi')){
       try{ setSync('','Menghapus…'); data=await apiPost({action:'delete',id:b.dataset.k}); render(); setSync('ok','Terhapus • '+new Date().toLocaleTimeString('id-ID')); }
@@ -1015,6 +1033,30 @@ $('bPrint').onclick=async ()=>{
   setTimeout(()=>window.print(), 300);                // beri jeda agar tabel selesai render
 };
 $('bRefresh').onclick=()=>reload();
+
+/* ===== Running text: kecepatan KONSTAN (tidak ngebut saat data/pop-up berubah) ===== */
+const TICKER_PXPS = 60;                 // kecepatan tetap: pixel/detik (↑ = lebih cepat)
+const _tickerCache = new WeakMap();
+function setupTicker(el, oneHtml){
+  if(!el) return;
+  const visible = el.offsetParent !== null;            // false bila elemen/parent display:none
+  const cached = _tickerCache.get(el);
+  // Lewati HANYA jika konten sama DAN sudah pernah diukur saat terlihat
+  if(cached && cached.html === oneHtml && cached.measured) return;
+  el.style.animation = 'none';
+  el.style.paddingLeft = '0';
+  el.innerHTML = oneHtml + oneHtml;                     // 2 salinan → loop mulus (-50%)
+  if(!visible){
+    _tickerCache.set(el, {html:oneHtml, measured:false}); // simpan konten, tandai BELUM terukur
+    return;                                             // ukur ulang nanti saat sudah terlihat
+  }
+  requestAnimationFrame(()=>{
+    const oneW = el.scrollWidth / 2 || 1;              // lebar 1 salinan
+    const dur  = Math.max(15, oneW / TICKER_PXPS);     // durasi ∝ lebar → kecepatan TETAP
+    el.style.animation = 'tickerMove ' + dur.toFixed(1) + 's linear infinite';
+    _tickerCache.set(el, {html:oneHtml, measured:true}); // tandai sudah terukur benar
+  });
+}
 
 /* ================= MODE PROYEKTOR ================= */
 function setProj(on){
@@ -1271,10 +1313,8 @@ function pjStartLoop(){
 })();
 window.addEventListener('resize',()=>{ fitBig(); });
 /* ============ FILTER TAB HASIL + TAB VERIFIKASI BENDAHARA ============ */
-const VKEY='gkpi_verif_v1';
-function loadVerif(){ try{return JSON.parse(localStorage.getItem(VKEY))||{};}catch(e){return {};} }
-function saveVerif(o){ localStorage.setItem(VKEY, JSON.stringify(o)); }
-let verifMap=loadVerif();
+let verifMap={};
+function buildVerif(){ verifMap={}; data.forEach(d=>{ if(d.verif) verifMap[d.id]=d.verif; }); }
 function dtOf(tgl,wkt){ return String(tgl||'')+'T'+String(wkt||'00:00'); }
 function inRangeDT(tgl,wkt){
   const fromD=$('hFrom')?$('hFrom').value:'', fromT=$('hFromT')?$('hFromT').value:'';
@@ -1320,16 +1360,39 @@ function renderHasil(){
   if($('hCount')) $('hCount').textContent=list.length+' transaksi ditampilkan';
 }
 
+function inRangeDTv(tgl,wkt){
+  const fromD=$('vFrom')?$('vFrom').value:'', fromT=$('vFromT')?$('vFromT').value:'';
+  const toD=$('vTo')?$('vTo').value:'',       toT=$('vToT')?$('vToT').value:'';
+  const cur=dtOf(tgl,wkt);
+  if(fromD){ if(cur < dtOf(fromD, fromT||'00:00')) return false; }
+  if(toD){   if(cur > dtOf(toD,   toT||'23:59'))  return false; }
+  if(!fromD && fromT && String(wkt||'') < fromT) return false;
+  if(!toD && toT && String(wkt||'') > toT) return false;
+  return true;
+}
+function fillVKetOptions(){
+  const sel=$('vKet'); if(!sel) return;
+  const cur=sel.value;
+  const kets=[...new Set(data.map(d=>String(d.ket)))].sort();
+  sel.innerHTML='<option value="">Semua Keterangan</option>'+kets.map(k=>'<option>'+esc(k)+'</option>').join('');
+  sel.value=cur;
+}
 function filteredVerif(){
   const vf=$('vFilter')?$('vFilter').value:'';
+  const src=$('vSrc')?$('vSrc').value:'', ket=$('vKet')?$('vKet').value:'';
   return data.filter(d=>{
+    if(!inRangeDTv(d.tanggal,d.waktu)) return false;
+    if(src && d.sumber!==src) return false;
+    if(ket && String(d.ket)!==ket) return false;
     if(vf==='masuk') return verifMap[d.id]==='masuk';
     if(vf==='belum') return verifMap[d.id]!=='masuk';
     return true;
   });
 }
+
 function renderVerif(){
   if(!$('tbV')) return;
+  fillVKetOptions();
   const list=filteredVerif();
   const sum=a=>a.reduce((s,d)=>s+Number(d.nominal||0),0);
   const vMasuk=data.filter(d=>verifMap[d.id]==='masuk');
@@ -1350,17 +1413,24 @@ function renderVerif(){
       '</select></td></tr>';
   }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--mut);padding:22px">Tidak ada transaksi sesuai filter.</td></tr>';
   if($('fVTot')) $('fVTot').textContent=num(sum(list));
+  if($('vCount')) $('vCount').textContent=list.length+' transaksi ditampilkan';
   document.querySelectorAll('.vsel').forEach(sel=>{
     if(sel.id==='vFilter') return;
-    sel.onchange=()=>{ const id=sel.dataset.id, val=sel.value;
-      if(val) verifMap[id]=val; else delete verifMap[id];
-      saveVerif(verifMap); renderVerif(); };
+    sel.onchange=async ()=>{ const id=sel.dataset.id, val=sel.value;
+      verifMap[id]=val; renderVerif();                       // tampil langsung (optimistic)
+      try{ setSync('','Menyimpan verifikasi…');
+        data=await apiPost({action:'verif',id:id,val:val}); render();
+        setSync('ok','Verifikasi tersimpan • '+new Date().toLocaleTimeString('id-ID')); }
+      catch(err){ alert('Gagal menyimpan verifikasi: '+err.message); reload(); }
+    };
   });
 }
 /* Bind kontrol filter & tombol */
 ['hFrom','hFromT','hTo','hToT','hSrc','hKet'].forEach(id=>{ const e=$(id); if(e){ e.oninput=renderHasil; e.onchange=renderHasil; } });
 (function(){ const r=$('hReset'); if(r) r.onclick=()=>{ ['hFrom','hFromT','hTo','hToT','hSrc','hKet'].forEach(id=>{const e=$(id); if(e) e.value='';}); renderHasil(); }; })();
 (function(){ const f=$('vFilter'); if(f) f.onchange=renderVerif; })();
+['vFrom','vFromT','vTo','vToT','vSrc','vKet'].forEach(id=>{ const e=$(id); if(e){ e.oninput=renderVerif; e.onchange=renderVerif; } });
+(function(){ const r=$('vReset'); if(r) r.onclick=()=>{ ['vFrom','vFromT','vTo','vToT','vSrc','vKet'].forEach(id=>{const e=$(id); if(e) e.value='';}); renderVerif(); }; })();
 (function(){ const b=$('bCsvV'); if(b) b.onclick=()=>{
   const head=['No','Waktu Catat','Sumber','Nama Pemberi','Keterangan','Nominal (Rp)','Diinput oleh','Status','Verifikasi Bendahara'];
   const rows=data.map((d,i)=>{
