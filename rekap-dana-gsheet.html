@@ -439,6 +439,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div><label for="qKet">Keterangan</label><select id="qKet"><option>QRIS</option></select></div>
       <div><label for="qNom">Nominal (Rp)</label><input type="number" id="qNom" min="1" step="any" inputmode="numeric" placeholder="1000000" required></div>
       <div><label for="qPtg">Diinput oleh</label><input type="text" id="qPtg" value="Petugas QRIS" required></div>
+      <div><label for="qKwi">No. Kwitansi</label><input type="text" id="qKwi" placeholder="cth. 001"></div>
       <div class="full"><button type="submit" class="p" id="btnQ">+ Simpan Transaksi QRIS</button>
       <button type="button" class="s" id="cQ" style="display:none">Batal Edit</button><button type="button" class="s" id="lockQ">Kunci Lagi</button></div>
     </form>
@@ -446,9 +447,9 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
   <div class="card">
     <h2>Daftar QRIS / Online</h2>
     <div class="scroll"><table>
-      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th style="text-align:center">Aksi</th></tr></thead>
+      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th>No. Kwitansi</th><th style="text-align:center">Aksi</th></tr></thead>
       <tbody id="tbQ"></tbody>
-      <tfoot><tr><td colspan="4">SUBTOTAL QRIS</td><td class="num" id="fQTot">0</td><td colspan="2"></td></tr></tfoot>
+      <tfoot><tr><td colspan="4">SUBTOTAL QRIS</td><td class="num" id="fQTot">0</td><td colspan="3"></td></tr></tfoot>
     </table></div>
   </div>
   </div>
@@ -474,6 +475,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div><label for="tKet">Keterangan</label><select id="tKet"><option>Transfer</option></select></div>
       <div><label for="tNom">Nominal (Rp)</label><input type="number" id="tNom" min="1" step="any" inputmode="numeric" placeholder="2000000" required></div>
       <div><label for="tPtg">Diinput oleh</label><input type="text" id="tPtg" value="Petugas Transfer" required></div>
+      <div><label for="tKwi">No. Kwitansi</label><input type="text" id="tKwi" placeholder="cth. 001"></div>
       <div class="full"><button type="submit" class="p" id="btnT">+ Simpan Transaksi Transfer</button>
       <button type="button" class="s" id="cT" style="display:none">Batal Edit</button><button type="button" class="s" id="lockT">Kunci Lagi</button></div>
     </form>
@@ -481,9 +483,9 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
   <div class="card">
     <h2>Daftar Transfer / Tunai</h2>
     <div class="scroll"><table>
-      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th style="text-align:center">Aksi</th></tr></thead>
+      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th>No. Kwitansi</th><th style="text-align:center">Aksi</th></tr></thead>
       <tbody id="tbT"></tbody>
-      <tfoot><tr><td colspan="4">SUBTOTAL TRANSFER</td><td class="num" id="fTTot">0</td><td colspan="2"></td></tr></tfoot>
+      <tfoot><tr><td colspan="4">SUBTOTAL TRANSFER</td><td class="num" id="fTTot">0</td><td colspan="3"></td></tr></tfoot>
     </table></div>
   </div>
   </div>
@@ -509,6 +511,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div><label for="cKet">Keterangan</label><select id="cKet"><option>Cash</option><option>Komitmen (Dana Belum Diterima)</option><option>Komitmen (Dana Sudah Diterima)</option></select></div>
       <div><label for="cNom">Nominal (Rp)</label><input type="number" id="cNom" min="1" step="any" inputmode="numeric" placeholder="5000000" required></div>
       <div><label for="cPtg">Diinput oleh</label><input type="text" id="cPtg" value="Petugas Cash" required></div>
+        <div><label for="cKwi">No. Kwitansi</label><input type="text" id="cKwi" placeholder="cth. 001"></div>
       <div class="full"><button type="submit" class="p" id="btnC">+ Simpan Cash / Komitmen</button>
       <button type="button" class="s" id="cC" style="display:none">Batal Edit</button><button type="button" class="s" id="lockC">Kunci Lagi</button></div>
     </form>
@@ -516,9 +519,9 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
   <div class="card">
     <h2>Daftar Cash / Komitmen</h2>
     <div class="scroll"><table>
-      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th style="text-align:center">Aksi</th></tr></thead>
+      <thead><tr><th>No</th><th>Waktu</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Petugas</th><th>No. Kwitansi</th><th style="text-align:center">Aksi</th></tr></thead>
       <tbody id="tbC"></tbody>
-      <tfoot><tr><td colspan="4">SUBTOTAL CASH / KOMITMEN</td><td class="num" id="fCTot">0</td><td colspan="2"></td></tr></tfoot>
+      <tfoot><tr><td colspan="4">SUBTOTAL CASH / KOMITMEN</td><td class="num" id="fCTot">0</td><td colspan="3"></td></tr></tfoot>
     </table></div>
   </div>
   </div>
@@ -556,7 +559,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div class="fcount" id="hCount">0 transaksi</div>
     </div>
     <div class="scroll"><table>
-      <thead><tr><th>No</th><th>Waktu Catat</th><th>Sumber</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Diinput oleh</th><th>Status</th></tr></thead>
+      <thead><tr><th>No</th><th>Waktu Catat</th><th>Sumber</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Diinput oleh</th><th>No. Kwitansi</th><th>Status</th></tr></thead>
       <tbody id="tbH"></tbody>
       <tfoot><tr><td colspan="5">TOTAL SELURUHNYA</td><td class="num" id="fHTot">0</td><td colspan="2"></td></tr>
       <tr><td colspan="5">- Sudah diterima (kas/bank)</td><td class="num" id="fHTerima">0</td><td colspan="2"></td></tr>
@@ -607,9 +610,9 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <button type="button" class="s" id="lockV">Kunci Lagi</button>
     </div>
     <div class="scroll"><table>
-      <thead><tr><th>No</th><th>Waktu Catat</th><th>Sumber</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Diinput oleh</th><th>Status</th><th>Verifikasi</th></tr></thead>
+      <thead><tr><th>No</th><th>Waktu Catat</th><th>Sumber</th><th>Nama Pemberi</th><th>Ket</th><th style="text-align:right">Nominal (Rp)</th><th>Diinput oleh</th><th>No. Kwitansi</th><th>Status</th><th>Verifikasi</th></tr></thead>
       <tbody id="tbV"></tbody>
-      <tfoot><tr><td colspan="5">TOTAL (sesuai filter)</td><td class="num" id="fVTot">0</td><td colspan="3"></td></tr></tfoot>
+      <tfoot><tr><td colspan="5">TOTAL (sesuai filter)</td><td class="num" id="fVTot">0</td><td colspan="4"></td></tr></tfoot>
     </table></div>
   </div>
   </div>
@@ -771,6 +774,7 @@ function startEdit(id){
   $(pre+'Tgl').value=d.tanggal; $(pre+'Wkt').value=d.waktu;
   $(pre+'Nama').value=d.nama; $(pre+'Ket').value=d.ket;
   $(pre+'Nom').value=d.nominal; $(pre+'Ptg').value=d.petugas;
+  if($(pre+'Kwi')) $(pre+'Kwi').value=d.kwitansi||'';
   editRef=d;
   $('btn'+pre.toUpperCase()).textContent='SIMPAN PERUBAHAN';
   $('c'+pre.toUpperCase()).style.display='inline-block';
@@ -780,7 +784,7 @@ function endEdit(pre){
   editRef=null;
   $('btn'+pre.toUpperCase()).textContent = labelBtn(pre);
   $('c'+pre.toUpperCase()).style.display='none';
-  $(pre+'Nama').value=''; $(pre+'Nom').value='';
+  $(pre+'Nama').value=''; $(pre+'Nom').value=''; if($(pre+'Kwi')) $(pre+'Kwi').value='';
 }
 $('cQ').onclick=()=>endEdit('q');
 $('cT').onclick=()=>endEdit('t');
@@ -811,8 +815,10 @@ function rowsInput(list,tbId,totId){
     '<tr><td>'+(d._n)+'</td><td>'+esc(dmy(d.tanggal)+' '+d.waktu)+'</td>'+
     '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
     '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
-    '<td><button class="ed" data-e="'+d.id+'" title="Edit baris">&#9998;</button> <button class="x" data-k="'+d.id+'" title="Hapus baris">&times;</button></td></tr>').join('')
-    : '<tr><td colspan="7" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
+    '<td>'+esc(d.kwitansi||'')+'</td>'+
+    '<td><button class="ed" data-e="'+d.id+'" title="Edit baris">✎</button> <button class="x" data-k="'+d.id+'" title="Hapus baris">×</button></td></tr>').join('')
+    : '<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:22px">Belum ada transaksi.</td></tr>';
+
   $(totId).textContent=num(sum(list));
 }
 function isKom(d){ var k=String(d.ket||'').toLowerCase(); if(k.indexOf('sudah')>=0) return false; return k.indexOf('komitmen')>=0||k.indexOf('belum')>=0; }
@@ -991,7 +997,8 @@ function bind(fId,pre,sumber,okId,errId){
     if(!(n>0)) return flash($(errId),'Nominal harus lebih besar dari 0.');
     const nama=$(pre+'Nama').value.trim();
     const rec={tanggal:$(pre+'Tgl').value,waktu:$(pre+'Wkt').value,sumber:sumber,
-      nama:nama,ket:$(pre+'Ket').value,nominal:n,petugas:$(pre+'Ptg').value.trim()};
+      nama:nama,ket:$(pre+'Ket').value,nominal:n,petugas:$(pre+'Ptg').value.trim(),
+      kwitansi:($(pre+'Kwi')?$(pre+'Kwi').value.trim():'')};
     const btn=$('btn'+pre.toUpperCase()); const old=btn.textContent; btn.disabled=true; btn.textContent='Menyimpan…';
     try{
       if(editRef!==null){
@@ -1014,8 +1021,8 @@ bind('fC','c','Cash/Komitmen','mOkC','mErrC');
 
 /* ================= AKSI HASIL ================= */
 $('bCsv').onclick=()=>{
-  const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','Status'];
-  const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima']);
+  const head=['No','Waktu Catat','Sumber','Nama Pemberi / Sumber','Keterangan','Nominal (Rp)','Diinput oleh','No. Kwitansi','Status'];
+  const rows=data.map((d,i)=>[i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,d.kwitansi||'',isKom(d)?'Komitmen':'Diterima']);
   const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -1354,8 +1361,9 @@ function renderHasil(){
     '<td><span class="tag '+tagOf(d.sumber)+'">'+esc(d.sumber)+'</span></td>'+
     '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
     '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
+    '<td>'+esc(d.kwitansi||'')+'</td>'+
     '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag trd">Diterima</span>')+'</td></tr>').join('')
-    : '<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:22px">Tidak ada transaksi sesuai filter.</td></tr>';
+    : '<tr><td colspan="9" style="text-align:center;color:var(--mut);padding:22px">Tidak ada transaksi sesuai filter.</td></tr>';
   $('fHTot').textContent=num(sAll); $('fHTerima').textContent=num(sTer); $('fHKom').textContent=num(sKom);
   if($('hCount')) $('hCount').textContent=list.length+' transaksi ditampilkan';
 }
@@ -1405,13 +1413,14 @@ function renderVerif(){
       '<td><span class="tag '+tagOf(d.sumber)+'">'+esc(d.sumber)+'</span></td>'+
       '<td>'+esc(d.nama)+'</td><td>'+esc(d.ket)+'</td>'+
       '<td class="num">'+num(d.nominal)+'</td><td>'+esc(d.petugas)+'</td>'+
+      '<td>'+esc(d.kwitansi||'')+'</td>'+
       '<td>'+(isKom(d)?'<span class="tag tk">Komitmen</span>':'<span class="tag trd">Diterima</span>')+'</td>'+
       '<td><select class="vsel" data-id="'+esc(d.id)+'">'+
         '<option value=""'+(v===''?' selected':'')+'>— pilih —</option>'+
         '<option value="masuk"'+(v==='masuk'?' selected':'')+'>Dana sudah masuk</option>'+
         '<option value="belum"'+(v==='belum'?' selected':'')+'>Dana Belum Masuk</option>'+
       '</select></td></tr>';
-  }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--mut);padding:22px">Tidak ada transaksi sesuai filter.</td></tr>';
+  }).join('') : '<tr><td colspan="10" style="text-align:center;color:var(--mut);padding:22px">Tidak ada transaksi sesuai filter.</td></tr>';
   if($('fVTot')) $('fVTot').textContent=num(sum(list));
   if($('vCount')) $('vCount').textContent=list.length+' transaksi ditampilkan';
   document.querySelectorAll('.vsel').forEach(sel=>{
@@ -1432,10 +1441,10 @@ function renderVerif(){
 ['vFrom','vFromT','vTo','vToT','vSrc','vKet'].forEach(id=>{ const e=$(id); if(e){ e.oninput=renderVerif; e.onchange=renderVerif; } });
 (function(){ const r=$('vReset'); if(r) r.onclick=()=>{ ['vFrom','vFromT','vTo','vToT','vSrc','vKet'].forEach(id=>{const e=$(id); if(e) e.value='';}); renderVerif(); }; })();
 (function(){ const b=$('bCsvV'); if(b) b.onclick=()=>{
-  const head=['No','Waktu Catat','Sumber','Nama Pemberi','Keterangan','Nominal (Rp)','Diinput oleh','Status','Verifikasi Bendahara'];
+  const head=['No','Waktu Catat','Sumber','Nama Pemberi','Keterangan','Nominal (Rp)','Diinput oleh','No. Kwitansi','Status','Verifikasi Bendahara'];
   const rows=data.map((d,i)=>{
     const v=verifMap[d.id]==='masuk'?'Dana sudah masuk':verifMap[d.id]==='belum'?'Dana Belum Masuk':'Belum diverifikasi';
-    return [i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,isKom(d)?'Komitmen':'Diterima',v];
+    return [i+1,dmy(d.tanggal)+' '+d.waktu,d.sumber,d.nama,d.ket,d.nominal,d.petugas,d.kwitansi||'',isKom(d)?'Komitmen':'Diterima',v];
   });
   const csv='\uFEFF'+[head,...rows].map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const a=document.createElement('a');
