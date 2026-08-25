@@ -265,7 +265,7 @@ background:linear-gradient(90deg,#ff3030,#fbbf24,#34d399)}
 font-size:2.6vh;font-weight:800;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .pjRt{flex:none;background:linear-gradient(90deg,#0b1220,#132038,#0b1220);border:1px solid var(--line);
 border-radius:12px;padding:1.4vh 0;overflow:hidden;position:relative;margin-top:.4vh}
-.pjRt .track{display:inline-block;white-space:nowrap;padding-left:0;will-change:transform}  
+.pjRt .track{display:inline-block;white-space:nowrap;padding-left:0;will-change:transform}
 .pjRt b{color:var(--gold);font-size:2.6vh}
 .pjRt span.it{color:var(--txt);font-size:2.6vh;margin:0 8px}
 .pjRt span.sep{color:var(--qris);margin:0 14px;font-weight:700;font-size:2.6vh}
@@ -326,9 +326,53 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
 @keyframes msgOut{from{opacity:1;transform:translateX(-50%) translateY(0)}to{opacity:0;transform:translateX(-50%) translateY(-20px)}}
 #screenMsg .ic{font-size:5vh;margin-bottom:1vh}
 #screenMsg .mt{font-size:4vh;font-weight:800;color:#fff;line-height:1.25;white-space:pre-wrap}
+/* ====== Layar Super Admin ====== */
+#superAdminGate{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 28%,#0f3b46,#0b1220 72%);padding:20px}
+#superAdminGate.hide{display:none}
+.saCard{background:var(--card);border:2px solid var(--gold);border-radius:22px;padding:34px 30px;max-width:470px;width:100%;
+  text-align:center;box-shadow:0 24px 90px rgba(0,0,0,.6),0 0 70px rgba(251,191,36,.18)}
+.saLogos{display:flex;align-items:center;justify-content:center;gap:28px;margin-bottom:18px}
+.saLogos img{height:96px;width:auto;max-width:130px;object-fit:contain}
+.saTitle{margin:0;font-size:23px;letter-spacing:1px;color:#fff;line-height:1.2}
+.saSub{margin:8px 0 0;font-size:13px;color:var(--mut)}
+.saSub b{color:var(--gold)}
+.saLock{margin:22px 0 4px;font-size:17px;font-weight:800;color:var(--gold)}
+.saHint{font-size:12px;color:var(--mut);margin:0 0 16px}
+#saPass{width:100%;text-align:center;letter-spacing:3px;padding:13px;border-radius:10px;
+  border:1px solid var(--line);background:#0b1220;color:var(--txt);font-size:16px;margin-bottom:12px}
+#saPass:focus{outline:2px solid var(--gold);border-color:transparent}
+.saErr{display:none;color:var(--red);font-size:13px;margin-bottom:10px}
+.saErr.show{display:block}
+.saBtn{width:100%;background:var(--gold);color:#1f2937;padding:14px;border:0;border-radius:10px;
+  font-size:15px;font-weight:800;cursor:pointer}
+.saBtn:hover{filter:brightness(1.05)}
+.saState{margin-top:14px;font-size:11px;color:var(--mut)}
+.saDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mut);margin-right:5px;vertical-align:middle}
+.saDot.ok{background:#34d399}.saDot.bad{background:#f87171}
+header .ht h2{font-size:12px;font-weight:600;color:#cbd5e1;margin:6px 0 0;padding:0;border:0}
+body.proj header .ht h2{font-size:1.9vh}
 </style>
 </head>
 <body>
+<!-- ====== LAYAR SUPER ADMIN (gerbang dashboard) ====== -->
+<div id="superAdminGate">
+  <div class="saCard">
+    <div class="saLogos">
+      <img id="saLogoPanitia" alt="Logo Panitia Pembangunan">
+      <img id="saLogoGKPI" alt="Logo GKPI Depok">
+    </div>
+    <h1 class="saTitle">GKPI JK DEPOK</h1>
+    <p class="saSub">Konser Penggalangan Dana &mdash; <b>Light the Next Generation</b></p>
+    <div class="saLock" id="saLockLbl">&#128274; Dashboard Terkunci</div>
+    <p class="saHint">Menunggu Super Admin membuka dashboard untuk semua perangkat&hellip;</p>
+    <input type="password" id="saPass" placeholder="Password Super Admin" autocomplete="off">
+    <div class="saErr" id="saErr"></div>
+    <button type="button" class="saBtn" id="saUnlock">&#128275; Buka Dashboard (Semua Perangkat)</button>
+    <div class="saState" id="saState"><span class="saDot"></span>Menghubungkan&hellip;</div>
+  </div>
+</div>
+
 <div class="wrap">
 <header>
   <img id="hdrPanitia" alt="Logo Panitia Pembangunan">
@@ -349,9 +393,9 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
 </div>
 <div class="pane on" id="pDash">
   <div class="syncwrap"><span class="dotp" id="syncDot"></span><span id="syncTxt">Menghubungkan ke Google Sheet…</span>
-  </div>   
-  <div class="projbar"><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px"> Muat Ulang</button><button type="button" class="s" id="bMsg" style="background:var(--qris);color:#0b1220;padding:6px 12px">💬 Pesan ke Layar</button><button type="button" class="s" id="tStart">▶ Mulai Acara</button><button type="button" class="s" id="tReset">⏹ Selesai Acara</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937"> Install App</button><button type="button" class="s" id="bGoal"> Atur Target</button><button type="button" class="s" id="bProj"> Mode Proyektor (Layar Penuh)</button></div>
-  <button type="button" class="s" id="bExit" title="Keluar mode proyektor">&#10006; Keluar</button>
+  </div>
+  <div class="projbar"><button type="button" class="s" id="bRefresh" style="margin-left:auto;padding:6px 12px"> Muat Ulang</button><button type="button" class="s" id="bAdminLock" style="background:#7f1d1d;color:#fecaca;padding:6px 12px">&#128274; Kunci Dashboard</button><button type="button" class="s" id="bMsg" style="background:var(--qris);color:#0b1220;padding:6px 12px">💬 Pesan ke Layar</button><button type="button" class="s" id="tStart">▶ Mulai Acara</button><button type="button" class="s" id="tReset">⏹ Selesai Acara</button><button type="button" class="s" id="bInstall" style="display:none;background:var(--gold);color:#1f2937"> Install App</button><button type="button" class="s" id="bGoal"> Atur Target</button><button type="button" class="s" id="bProj"> Mode Proyektor (Layar Penuh)</button></div>
+  <button type="button" class="s" id="bExit" title="Keluar mode proyektor">✖ Keluar</button>
   <div class="kpi">
     <div class="card b-tot"><div class="lbl">Total Dana Diterima</div><div class="val" id="kTot">Rp 0</div>
       <div class="sub" id="kTotN">0 transaksi diterima</div>
@@ -362,7 +406,6 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
     <div class="card b-t"><div class="lbl">Total Transfer</div><div class="val" id="kT">Rp 0</div><div class="sub" id="kTN">0 transaksi</div></div>
     <div class="card b-c"><div class="lbl">Total Cash Diterima</div><div class="val" id="kC">Rp 0</div><div class="sub" id="kCN">0 transaksi</div></div>
     <div class="card b-ks"><div class="lbl">Total Komitmen (Dana Sudah Diterima)</div><div class="val" id="kKS">Rp 0</div><div class="sub" id="kKSN">Total Komitmen (Dana Belum Diterima): Rp 0</div></div>
-
   </div>
   <div class="card cRekap">
     <h2>Rekap per Sumber</h2>
@@ -642,10 +685,10 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
       <div class="pjList">
         <div class="pjListHead">
           <h3>&#128176; Donasi Masuk</h3>
-          <span class="cnt"><span id="pjMode" class="modeTag auto">&#9654; Auto</span> <span id="pjCnt">0 transaksi</span></span>
+          <span class="cnt"><span id="pjMode" class="modeTag auto">▶ Auto</span> <span id="pjCnt">0 transaksi</span></span>
         </div>
         <div class="pjListWrap" id="pjListWrap"><div class="pjScroller" id="pjScroller"></div>
-          <button type="button" class="pjTop" id="pjTop" title="Kembali ke atas & lanjut auto">&#8679; Atas</button>
+          <button type="button" class="pjTop" id="pjTop" title="Kembali ke atas & lanjut auto">⇧ Atas</button>
         </div>
       </div>
     </div>
@@ -656,7 +699,7 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
     <div class="pjRt"><div class="track" id="pjTrack"></div></div>
   </div>
 </div>
-<button type="button" class="s" id="pjExit" title="Keluar mode proyektor">&#10006; Keluar</button>
+<button type="button" class="s" id="pjExit" title="Keluar mode proyektor">✖ Keluar</button>
 <footer>Data tersimpan terpusat di Google Sheet. Semua perangkat yang membuka dashboard ini melihat data yang sama.</footer>
 <div id="celebrate">
   <div class="ic">&#127881;</div>
@@ -666,7 +709,6 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
   <div class="nm" id="celNm"></div>
   <div class="bless" id="celBless">Tuhan Yesus Memberkati &#128591;</div>
 </div>
-<!-- ⬇⬇⬇ TEMPEL PATCH 3 DI SINI ⬇⬇⬇ -->
 <!-- Popup pesan operator (muncul di mode proyektor, 5 detik) -->
 <div id="screenMsg"><div class="ic">📢</div><div class="mt" id="screenMsgText"></div></div>
 <!-- Modal "Pesan ke Layar" (operator) -->
@@ -683,7 +725,6 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
     <div id="msgList" class="msgList"></div>
   </div>
 </div>
-<!-- ⬆⬆⬆ SAMPAI SINI ⬆⬆⬆ -->
 </div>
 <script>
 
@@ -698,8 +739,6 @@ const LOGO_GKPI='logo-gkpi.png';
 (function(){var ids=[['pjLogoPanitia',LOGO_PANITIA],['pjLogoGKPI',LOGO_GKPI],['hdrPanitia',LOGO_PANITIA],['hdrGKPI',LOGO_GKPI]];ids.forEach(function(p){var e=document.getElementById(p[0]);if(e)e.src=p[1];});})();
 
 /* ================= KONFIGURASI ================= */
-/* GANTI baris di bawah dengan URL Web App Google Apps Script Anda,
-   contoh: https://script.google.com/macros/s/AKfycb...../exec  */
 const API = 'https://script.google.com/macros/s/AKfycbymr_oGTfYyhgMN40ASA2ahFpgLYv8GVBsV5qIKeQMSU0W3cL3Hs1cssKWqRdpiimJ6-g/exec';
 
 const PASS='3.0';                 // password tab / edit / hapus
@@ -1545,6 +1584,69 @@ $('bMsg') && ($('bMsg').onclick=()=>{const p = prompt('Masukkan password Pesan k
 $('bMsgClose') && ($('bMsgClose').onclick=()=>$('msgModal').classList.remove('show'));
 $('msgModal') && ($('msgModal').onclick=e=>{ if(e.target===$('msgModal')) $('msgModal').classList.remove('show'); });
 $('bMsgSend') && ($('bMsgSend').onclick=sendMsg);
+/* ================= SUPER ADMIN GATE (lintas-perangkat via Google Sheet) ================= */
+const SUPER_PASS   = '1989';                    // password Super Admin (ubah sesuai selera)
+const ADMIN_LOCAL  = 'gkpi_admin_unlocked_v1';   // fallback bila belum tersambung Sheet
+(function(){ var a=document.getElementById('saLogoPanitia'), b=document.getElementById('saLogoGKPI');
+  if(a) a.src=LOGO_PANITIA; if(b) b.src=LOGO_GKPI; })();
+function saShow(show){ const g=document.getElementById('superAdminGate'); if(!g) return; g.classList.toggle('hide', !show); }
+function saSetState(txt, cls){ const s=document.getElementById('saState'); if(!s) return; s.innerHTML='<span class="saDot '+(cls||'')+'"></span>'+txt; }
+const ADMIN_LAST = 'gkpi_admin_last_state_v1';   // status terakhir yang berhasil dibaca
+function adminLastKnown(){ return localStorage.getItem(ADMIN_LAST)==='1'; }
+function adminRemember(open){ localStorage.setItem(ADMIN_LAST, open?'1':'0'); }
+async function checkAdmin(){
+  if(!apiReady){ const open = localStorage.getItem(ADMIN_LOCAL)==='1';
+    saShow(!open); saSetState(open?'Mode contoh: terbuka':'Mode contoh: terkunci', open?'ok':'bad'); return; }
+  let j=null;
+  try{
+    const res=await fetch(API+'?type=admin',{method:'GET'});
+    j=await res.json();
+  }catch(e){ j=null; }
+
+  // Jawaban SAH dari server (ok:true) -> ikuti & ingat
+  if(j && j.ok===true){
+    const open = (j.unlocked===true);
+    adminRemember(open);
+    saShow(!open);
+    saSetState(open?'Dashboard terbuka':'Terkunci \u2022 menunggu Super Admin', open?'ok':'bad');
+    return;
+  }
+
+  // Jaringan gagal / offline (termasuk balasan {ok:false} dari service worker)
+  // -> PERTAHANKAN status terakhir, jangan mengunci layar secara tiba-tiba.
+  const open = adminLastKnown();
+  saShow(!open);
+  saSetState(open
+    ? 'Dashboard terbuka \u2022 offline (status terakhir dipertahankan)'
+    : 'Terkunci \u2022 offline, menunggu koneksi', open?'ok':'bad');
+}
+async function adminUnlock(){
+  const p=document.getElementById('saPass'), err=document.getElementById('saErr');
+  if(p.value!==SUPER_PASS){ err.textContent='Password Super Admin salah.'; err.classList.add('show'); p.value=''; p.focus(); return; }
+  err.classList.remove('show');
+  const btn=document.getElementById('saUnlock'), old=btn.textContent; btn.disabled=true; btn.textContent='Membuka\u2026';
+  try{
+    if(apiReady){ await fetch(API,{method:'POST',body:JSON.stringify({action:'adminUnlock'})}); }
+    else { localStorage.setItem(ADMIN_LOCAL,'1'); }
+    adminRemember(true); saShow(false); p.value=''; reload();
+  }catch(e){ err.textContent='Gagal membuka: '+e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+async function adminLock(){
+  const p=prompt('Password Super Admin untuk MENGUNCI dashboard di semua perangkat:'); if(p===null) return;
+  if(p!==SUPER_PASS){ alert('Password salah.'); return; }
+  try{
+    if(apiReady){ await fetch(API,{method:'POST',body:JSON.stringify({action:'adminLock'})}); }
+    else { localStorage.removeItem(ADMIN_LOCAL); }
+    adminRemember(false); checkAdmin();
+  }catch(e){ alert('Gagal mengunci: '+e.message); }
+}
+document.getElementById('saUnlock').onclick=adminUnlock;
+document.getElementById('saPass').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); adminUnlock(); } };
+if(document.getElementById('bAdminLock')) document.getElementById('bAdminLock').onclick=adminLock;
+checkAdmin();
+setInterval(checkAdmin, 10000);
+
 /* ================= INIT ================= */
 (function init(){
   const now=new Date();
