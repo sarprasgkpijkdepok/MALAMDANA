@@ -276,7 +276,7 @@ body.proj #pjExit:hover{opacity:1}
   @page{size:A3 landscape;margin:10mm}
   html,body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
   .wrap{max-width:100%!important}
-  .tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit,.lk,#bCsv,#bPrint,#bReset,#lockH,.full{display:none!important}
+  .tabs,.lock,form,.x,.ed,.rt,.projbar,.syncwrap,#bExit,.lk,#bCsv,#bPrint,#bReset,#lockH,.full,#safeBadge,#superAdminGate,#pjExit{display:none!important}
   .pane{display:none!important}
   #pHasil,#pHasil.on{display:block!important}
   header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -348,6 +348,20 @@ body.proj #screenMsg.hide{animation:msgOut .4s ease forwards}
   font-size:15px;font-weight:800;cursor:pointer}
 .saBtn:hover{filter:brightness(1.05)}
 .saState{margin-top:14px;font-size:11px;color:var(--mut)}
+/* ==== SAFE MODE (Super Admin bypass) ==== */
+.saBtn2{width:100%;background:transparent;color:var(--gold);padding:12px;border:1px dashed var(--gold);
+  border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:10px}
+.saBtn2:hover{background:rgba(251,191,36,.10)}
+.saOr{font-size:11px;color:var(--mut);letter-spacing:2px;margin:14px 0 2px;text-transform:uppercase}
+#safeBadge{display:none;position:fixed;left:12px;bottom:12px;z-index:99999;align-items:center;gap:9px;
+  background:rgba(11,18,32,.92);border:1px solid var(--gold);border-radius:12px;padding:8px 12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.5)}
+body.safemode #safeBadge{display:flex}
+#safeBadge .sbT{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--gold);text-transform:uppercase}
+#safeBadge .sbS{font-size:10px;color:var(--mut);margin-top:2px}
+#safeBadge button{background:#7f1d1d;color:#fecaca;border:0;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer}
+body.proj #safeBadge{opacity:.28}
+body.proj #safeBadge:hover{opacity:1}
 .saDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mut);margin-right:5px;vertical-align:middle}
 .saDot.ok{background:#34d399}.saDot.bad{background:#f87171}
 header .ht h2{font-size:12px;font-weight:600;color:#cbd5e1;margin:6px 0 0;padding:0;border:0}
@@ -369,6 +383,9 @@ body.proj header .ht h2{font-size:1.9vh}
     <input type="password" id="saPass" placeholder="Password Super Admin" autocomplete="off">
     <div class="saErr" id="saErr"></div>
     <button type="button" class="saBtn" id="saUnlock">&#128275; Buka Dashboard (Semua Perangkat)</button>
+    <div class="saOr">atau</div>
+    <button type="button" class="saBtn2" id="saSafe">&#128737; Masuk Safe Mode (Perangkat Ini Saja)</button>
+    <p class="saHint" style="margin:8px 0 0">Safe Mode: Super Admin tetap bisa masuk dashboard walau semua perangkat lain terkunci. Status kunci global tidak berubah.</p>
     <div class="saState" id="saState"><span class="saDot"></span>Menghubungkan&hellip;</div>
   </div>
 </div>
@@ -708,6 +725,11 @@ body.proj header .ht h2{font-size:1.9vh}
   <div class="amt" id="celAmt"></div>
   <div class="nm" id="celNm"></div>
   <div class="bless" id="celBless">Tuhan Yesus Memberkati &#128591;</div>
+</div>
+<!-- Badge Safe Mode Super Admin -->
+<div id="safeBadge">
+  <div><div class="sbT">&#128737; Safe Mode &mdash; Super Admin</div><div class="sbS" id="safeInfo">Perangkat ini saja</div></div>
+  <button type="button" id="safeExit">Keluar</button>
 </div>
 <!-- Popup pesan operator (muncul di mode proyektor, 5 detik) -->
 <div id="screenMsg"><div class="ic">📢</div><div class="mt" id="screenMsgText"></div></div>
@@ -1589,12 +1611,53 @@ const SUPER_PASS   = '1989';                    // password Super Admin (ubah se
 const ADMIN_LOCAL  = 'gkpi_admin_unlocked_v1';   // fallback bila belum tersambung Sheet
 (function(){ var a=document.getElementById('saLogoPanitia'), b=document.getElementById('saLogoGKPI');
   if(a) a.src=LOGO_PANITIA; if(b) b.src=LOGO_GKPI; })();
-function saShow(show){ const g=document.getElementById('superAdminGate'); if(!g) return; g.classList.toggle('hide', !show); }
+let gateWasVisible=true;
+function saShow(show){ const g=document.getElementById('superAdminGate'); if(!g) return;
+  if(show && !gateWasVisible && typeof gateSetMode==='function') gateSetMode('super');
+  gateWasVisible=show; g.classList.toggle('hide', !show); }
 function saSetState(txt, cls){ const s=document.getElementById('saState'); if(!s) return; s.innerHTML='<span class="saDot '+(cls||'')+'"></span>'+txt; }
 const ADMIN_LAST = 'gkpi_admin_last_state_v1';   // status terakhir yang berhasil dibaca
 function adminLastKnown(){ return localStorage.getItem(ADMIN_LAST)==='1'; }
 function adminRemember(open){ localStorage.setItem(ADMIN_LAST, open?'1':'0'); }
+
+/* ====== SAFE MODE: Super Admin tetap bisa masuk walau perangkat lain terkunci ====== */
+const SAFE_PASS = '14051989';                        // ← PASSWORD SAFE MODE (ubah di sini)
+const SAFE_KEY  = 'gkpi_safe_mode_v1';
+const SAFE_HOURS= 12;                            // masa berlaku Safe Mode (jam)
+function safeState(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SAFE_KEY)||'null');
+    if(!s || !s.until) return null;
+    if(Date.now()>s.until){ localStorage.removeItem(SAFE_KEY); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+function safeOn(){ return !!safeState(); }
+function safeEnable(){
+  localStorage.setItem(SAFE_KEY, JSON.stringify({since:Date.now(), until:Date.now()+SAFE_HOURS*3600*1000}));
+  safePaint();
+}
+function safeDisable(){ localStorage.removeItem(SAFE_KEY); safePaint(); checkAdmin(); }
+function safePaint(){
+  const on=safeOn();
+  document.body.classList.toggle('safemode', on);
+  const info=document.getElementById('safeInfo');
+  if(info && on){
+    const sisa=Math.max(0,Math.round((safeState().until-Date.now())/60000));
+    const h=Math.floor(sisa/60), m=sisa%60;
+    info.textContent='Perangkat ini saja \u2022 sisa '+(h?h+' jam ':'')+m+' menit';
+  }
+}
+setInterval(safePaint, 60000);
+
 async function checkAdmin(){
+  /* Safe Mode aktif: paksa dashboard terbuka di perangkat ini, apa pun status kunci global. */
+  if(safeOn()){
+    safePaint(); saShow(false);
+    saSetState('Safe Mode Super Admin aktif di perangkat ini','ok');
+    return;
+  }
+  safePaint();
   if(!apiReady){ const open = localStorage.getItem(ADMIN_LOCAL)==='1';
     saShow(!open); saSetState(open?'Mode contoh: terbuka':'Mode contoh: terkunci', open?'ok':'bad'); return; }
   let j=null;
@@ -1641,8 +1704,48 @@ async function adminLock(){
     adminRemember(false); checkAdmin();
   }catch(e){ alert('Gagal mengunci: '+e.message); }
 }
-document.getElementById('saUnlock').onclick=adminUnlock;
-document.getElementById('saPass').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); adminUnlock(); } };
+/* ====== Gerbang 2 mode ====== */
+let gateMode='super';
+function gateSetMode(m){
+  gateMode=m;
+  const p=document.getElementById('saPass'), err=document.getElementById('saErr');
+  const bU=document.getElementById('saUnlock'), bS=document.getElementById('saSafe');
+  const lbl=document.getElementById('saLockLbl');
+  if(err) err.classList.remove('show');
+  if(p){ p.value=''; p.placeholder = (m==='safe') ? 'Password Safe Mode' : 'Password Super Admin'; }
+  if(m==='safe'){
+    if(bS){ bS.style.background='var(--gold)'; bS.style.color='#1f2937'; bS.style.borderStyle='solid';
+            bS.textContent='\u2713 Konfirmasi Masuk Safe Mode'; }
+    if(bU){ bU.style.opacity='.45'; bU.textContent='\u21A9 Batal \u2014 kembali ke Super Admin'; }
+    if(lbl) lbl.innerHTML='\uD83D\uDEE1 Mode: Safe Mode (Perangkat Ini)';
+  } else {
+    if(bS){ bS.style.background='transparent'; bS.style.color='var(--gold)'; bS.style.borderStyle='dashed';
+            bS.textContent='\uD83D\uDEE1 Masuk Safe Mode (Perangkat Ini Saja)'; }
+    if(bU){ bU.style.opacity='1'; bU.textContent='\uD83D\uDD13 Buka Dashboard (Semua Perangkat)'; }
+    if(lbl) lbl.innerHTML='\uD83D\uDD12 Dashboard Terkunci';
+  }
+  if(p) p.focus();
+}
+function safeEnter(){
+  const p=document.getElementById('saPass'), err=document.getElementById('saErr');
+  if(p.value!==SAFE_PASS){ err.textContent='Password Safe Mode salah.'; err.classList.add('show'); p.value=''; p.focus(); return; }
+  err.classList.remove('show'); p.value='';
+  safeEnable(); saShow(false); gateSetMode('super');
+  saSetState('Safe Mode Super Admin aktif di perangkat ini','ok');
+  reload();
+}
+function gateSubmit(){ if(gateMode==='safe') safeEnter(); else adminUnlock(); }
+if(document.getElementById('saSafe')) document.getElementById('saSafe').onclick=()=>{
+  if(gateMode==='safe') safeEnter(); else gateSetMode('safe');
+};
+if(document.getElementById('saUnlock')) document.getElementById('saUnlock').onclick=()=>{
+  if(gateMode==='safe') gateSetMode('super'); else adminUnlock();
+};
+if(document.getElementById('safeExit')) document.getElementById('safeExit').onclick=()=>{
+  if(!confirm('Keluar dari Safe Mode? Perangkat ini akan mengikuti status kunci global lagi.')) return;
+  safeDisable();
+};
+document.getElementById('saPass').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); gateSubmit(); } };
 if(document.getElementById('bAdminLock')) document.getElementById('bAdminLock').onclick=adminLock;
 checkAdmin();
 setInterval(checkAdmin, 10000);
