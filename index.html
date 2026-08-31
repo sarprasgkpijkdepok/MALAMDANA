@@ -975,22 +975,33 @@ function trend(list){
 }
 function goal(sA){
   const g=Number(localStorage.getItem(GKEY)||0);
+  const pcReal = g>0 ? (sA/g*100) : 0;      // persentase AKTUAL — boleh >100%
+  const pcBar  = Math.min(pcReal,100);      // lebar bar tetap maksimal 100%
+  const fmt = v => v.toFixed(1).replace('.',',');
+  const over = g>0 && sA>g;
+
+  /* ---- Mode Proyektor ---- */
   if($('pjGoalBox')){
     if(g>0){
-      const pf=Math.min(sA/g,1);
       $('pjGoalBox').style.display='block';
-      $('pjFill').style.width=(pf*100)+'%';
-      $('pjPc').textContent=(pf*100).toFixed(1).replace('.',',')+'% tercapai';
+      $('pjFill').style.width=pcBar+'%';
+      $('pjPc').textContent=fmt(pcReal)+'% tercapai';
+      $('pjPc').style.color = over ? '#fff' : '#fff';
       $('pjTarget').textContent=rp(g);
-      $('pjSisa').textContent = sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi';
+      $('pjSisa').textContent = over
+        ? 'TARGET TERLAMPAUI! Lebih '+rp(sA-g)+' — Terima kasih.'
+        : (sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi');
     } else { $('pjGoalBox').style.display='none'; }
   }
+
+  /* ---- Dashboard normal ---- */
   if(!(g>0)){ $('goalBox').style.display='none'; return; }
   $('goalBox').style.display='block';
-  const f=Math.min(sA/g,1);
-  $('gFill').style.width=(f*100)+'%';
-  $('gTxt').innerHTML='<b>'+(f*100).toFixed(1).replace('.',',')+'%</b> dari target '+rp(g);
-  $('gSisa').textContent = sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi';
+  $('gFill').style.width=pcBar+'%';
+  $('gTxt').innerHTML='<b>'+fmt(pcReal)+'%</b> dari target '+rp(g);
+  $('gSisa').textContent = over
+    ? 'TARGET TERLAMPAUI! Lebih '+rp(sA-g)
+    : (sA>=g ? 'TARGET TERCAPAI! Terima kasih.' : 'Kurang '+rp(g-sA)+' lagi');
 }
 function render(){
   buildVerif();
